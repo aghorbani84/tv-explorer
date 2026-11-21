@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { ArrowLeft, ChevronDown, ExternalLink, Heart, Star, TriangleAlert } from 'lucide-react'
 import useSWR from 'swr'
 import { fetcher, formatRating, showDetailUrl, stripHtml } from '../lib/api'
 import type { Show, ShowDetail } from '../lib/api'
@@ -12,18 +13,37 @@ interface ShowDetailProps {
 
 function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
-    <div className="rounded-2xl bg-rose-500/10 p-6 text-center ring-1 ring-rose-500/30">
-      <p className="text-lg font-semibold text-rose-200">Couldn&apos;t load show details</p>
-      <p className="mt-2 text-sm text-rose-200/80">
+    <div className="rounded-2xl bg-rose-500/10 p-phi-xl text-center ring-1 ring-rose-500/30">
+      <TriangleAlert size={22} className="mx-auto text-rose-300" aria-hidden />
+      <p className="mt-3 text-phi font-semibold text-rose-200">Couldn&apos;t load show details</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-rose-200/80">
         The TVMaze API appears to be unreachable right now. {message}
       </p>
       <button
         type="button"
         onClick={onRetry}
-        className="mt-4 rounded-lg bg-rose-500 px-4 py-2 text-sm font-medium text-white hover:bg-rose-400"
+        className="mt-5 rounded-full bg-rose-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-rose-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
       >
         Try again
       </button>
+    </div>
+  )
+}
+
+function DetailSkeleton() {
+  return (
+    <div className="animate-pulse rounded-3xl bg-surface p-phi-lg ring-1 ring-line" aria-label="Loading show details">
+      <div className="flex flex-col gap-phi-lg sm:flex-row">
+        <div className="aspect-[210/295] w-40 shrink-0 rounded-2xl bg-raised sm:w-52" />
+        <div className="min-w-0 flex-1">
+          <div className="h-9 w-2/3 rounded-lg bg-raised" />
+          <div className="mt-4 h-4 w-1/2 rounded bg-raised" />
+          <div className="mt-6 h-4 w-full rounded bg-raised" />
+          <div className="mt-2 h-4 w-5/6 rounded bg-raised" />
+          <div className="mt-2 h-4 w-3/4 rounded bg-raised" />
+        </div>
+      </div>
+      <p className="mt-phi-lg text-sm text-zinc-400">Loading show details from TVMaze…</p>
     </div>
   )
 }
@@ -54,20 +74,13 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
       <button
         type="button"
         onClick={onBack}
-        className="mb-6 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700"
+        className="mb-phi flex items-center gap-2 rounded-full bg-surface px-4 py-2 text-sm font-medium text-zinc-200 ring-1 ring-line transition hover:bg-raised hover:ring-zinc-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
       >
-        ← Back to results
+        <ArrowLeft size={16} strokeWidth={2} aria-hidden />
+        Back to results
       </button>
 
-      {isLoading && (
-        <div className="animate-pulse rounded-2xl bg-slate-900 p-6 ring-1 ring-slate-800">
-          <div className="h-8 w-2/3 rounded bg-slate-800" />
-          <div className="mt-4 h-4 w-full rounded bg-slate-800" />
-          <div className="mt-2 h-4 w-5/6 rounded bg-slate-800" />
-          <div className="mt-2 h-4 w-3/4 rounded bg-slate-800" />
-          <p className="mt-6 text-sm text-slate-400">Loading show details from TVMaze…</p>
-        </div>
-      )}
+      {isLoading && <DetailSkeleton />}
 
       {error && !isLoading && (
         <ErrorState
@@ -78,86 +91,92 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
 
       {!isLoading && !error && (
         <>
-          <section className="overflow-hidden rounded-2xl bg-slate-900 ring-1 ring-slate-800">
-            <div className="flex flex-col gap-6 p-6 sm:flex-row">
+          <section className="animate-rise overflow-hidden rounded-3xl bg-surface ring-1 ring-line">
+            <div className="flex flex-col gap-phi-lg p-phi-lg sm:flex-row">
               {show.image ? (
                 <img
                   src={show.image.original}
                   alt={`${show.name} poster`}
-                  className="w-full max-w-60 self-start rounded-xl object-cover sm:w-60"
+                  className="w-40 self-start rounded-2xl object-cover shadow-2xl shadow-black/60 ring-1 ring-white/10 sm:w-52"
                 />
               ) : (
-                <div className="flex h-80 w-full max-w-60 items-center justify-center rounded-xl bg-slate-800 text-sm text-slate-400 sm:w-60">
+                <div className="flex h-80 w-40 items-center justify-center rounded-2xl bg-raised text-sm text-zinc-400 sm:w-52">
                   No poster available
                 </div>
               )}
 
               <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <h1 className="text-3xl font-bold text-slate-50">{show.name}</h1>
-                  <span className="rounded-md bg-slate-800 px-3 py-1 text-base font-semibold text-amber-300">
-                    ★ {formatRating(show.rating.average)}
-                  </span>
-                </div>
+                <h1 className="text-phi-lg font-bold leading-tight tracking-tight text-white">{show.name}</h1>
 
-                <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-3">
+                {/* The one number that gets to be big. */}
+                <p className="mt-3 flex items-baseline gap-2">
+                  <span className="flex items-center gap-1.5 text-phi font-bold leading-none text-gold">
+                    <Star size={18} strokeWidth={0} fill="currentColor" aria-hidden />
+                    {formatRating(show.rating.average)}
+                  </span>
+                  <span className="text-sm text-zinc-500">/ 10 · TVMaze rating</span>
+                </p>
+
+                <dl className="mt-phi grid grid-cols-2 gap-x-phi gap-y-3 text-sm sm:grid-cols-3">
                   <div>
-                    <dt className="text-slate-500">Status</dt>
-                    <dd className="font-medium text-slate-200">{show.status}</dd>
+                    <dt className="text-xs text-zinc-500">Status</dt>
+                    <dd className="mt-0.5 font-medium text-zinc-100">{show.status}</dd>
                   </div>
                   <div>
-                    <dt className="text-slate-500">Network</dt>
-                    <dd className="font-medium text-slate-200">{networkName}</dd>
+                    <dt className="text-xs text-zinc-500">Network</dt>
+                    <dd className="mt-0.5 font-medium text-zinc-100">{networkName}</dd>
                   </div>
                   <div>
-                    <dt className="text-slate-500">Premiered</dt>
-                    <dd className="font-medium text-slate-200">{show.premiered ?? 'Unknown'}</dd>
+                    <dt className="text-xs text-zinc-500">Premiered</dt>
+                    <dd className="mt-0.5 font-medium text-zinc-100">{show.premiered ?? 'Unknown'}</dd>
                   </div>
                   <div>
-                    <dt className="text-slate-500">Ended</dt>
-                    <dd className="font-medium text-slate-200">{show.ended ?? '—'}</dd>
+                    <dt className="text-xs text-zinc-500">Ended</dt>
+                    <dd className="mt-0.5 font-medium text-zinc-100">{show.ended ?? '—'}</dd>
                   </div>
                   <div>
-                    <dt className="text-slate-500">Language</dt>
-                    <dd className="font-medium text-slate-200">{show.language ?? 'Unknown'}</dd>
+                    <dt className="text-xs text-zinc-500">Language</dt>
+                    <dd className="mt-0.5 font-medium text-zinc-100">{show.language ?? 'Unknown'}</dd>
                   </div>
                   <div>
-                    <dt className="text-slate-500">Runtime</dt>
-                    <dd className="font-medium text-slate-200">{show.runtime ? `${show.runtime} min` : 'Unknown'}</dd>
+                    <dt className="text-xs text-zinc-500">Runtime</dt>
+                    <dd className="mt-0.5 font-medium text-zinc-100">{show.runtime ? `${show.runtime} min` : 'Unknown'}</dd>
                   </div>
                 </dl>
 
-                <div className="mt-4 flex flex-wrap gap-1">
+                <div className="mt-phi flex flex-wrap gap-1.5">
                   {show.genres.map((genre) => (
-                    <span key={genre} className="rounded-full bg-indigo-500/15 px-3 py-1 text-xs font-medium text-indigo-300 ring-1 ring-indigo-500/30">
+                    <span key={genre} className="rounded-full bg-gold/10 px-3 py-1 text-xs font-medium text-gold ring-1 ring-gold/25">
                       {genre}
                     </span>
                   ))}
                 </div>
 
-                <p className="mt-4 leading-relaxed text-slate-300">{summary || 'No summary available.'}</p>
+                <p className="mt-phi max-w-3xl text-[15px] leading-relaxed text-zinc-300">{summary || 'No summary available.'}</p>
 
-                <div className="mt-6 flex flex-wrap gap-3">
+                <div className="mt-phi flex flex-wrap gap-3">
                   <button
                     type="button"
                     onClick={() => onToggleFavorite(show)}
                     aria-pressed={isFavorite}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+                    className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
                       isFavorite
-                        ? 'bg-rose-500/15 text-rose-300 ring-1 ring-rose-500/40 hover:bg-rose-500/25'
-                        : 'bg-indigo-600 text-white hover:bg-indigo-500'
+                        ? 'bg-rose-500/15 text-rose-300 ring-rose-500/40 hover:bg-rose-500/25'
+                        : 'bg-gold font-semibold text-black hover:bg-gold-deep'
                     }`}
                   >
-                    {isFavorite ? '♥ Remove from Favorites' : '♡ Add to Favorites'}
+                    <Heart size={16} strokeWidth={2} fill={isFavorite ? 'currentColor' : 'none'} aria-hidden />
+                    {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
                   </button>
                   {show.officialSite && (
                     <a
                       href={show.officialSite}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700"
+                      className="flex items-center gap-2 rounded-full bg-raised px-5 py-2.5 text-sm font-medium text-zinc-100 ring-1 ring-line transition hover:ring-zinc-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
                     >
-                      Official site ↗
+                      Official site
+                      <ExternalLink size={14} strokeWidth={2} aria-hidden />
                     </a>
                   )}
                 </div>
@@ -165,24 +184,24 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
             </div>
           </section>
 
-          <section className="mt-10">
-            <h2 className="text-xl font-bold text-slate-50">Cast</h2>
+          <section className="mt-phi-lg">
+            <h2 className="text-phi font-bold tracking-tight text-white">Cast</h2>
             {!detail || detail._embedded.cast.length === 0 ? (
-              <p className="mt-3 text-sm text-slate-400">No cast information available for this show.</p>
+              <p className="mt-3 text-sm text-zinc-400">No cast information available for this show.</p>
             ) : (
-              <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              <ul className="mt-phi grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                 {detail._embedded.cast.slice(0, 12).map((member) => (
-                  <li key={member.person.id} className="flex items-center gap-3 rounded-xl bg-slate-900 p-3 ring-1 ring-slate-800">
+                  <li key={member.person.id} className="flex items-center gap-3 rounded-2xl bg-surface p-phi-sm ring-1 ring-line transition hover:ring-gold/30">
                     {member.person.image ? (
-                      <img src={member.person.image.medium} alt={member.person.name} loading="lazy" className="h-14 w-14 rounded-full object-cover" />
+                      <img src={member.person.image.medium} alt={member.person.name} loading="lazy" className="h-14 w-14 shrink-0 rounded-full object-cover ring-1 ring-white/10" />
                     ) : (
-                      <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-slate-800 text-lg text-slate-400">
+                      <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-raised text-lg font-semibold text-zinc-300">
                         {member.person.name.charAt(0)}
                       </span>
                     )}
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-slate-100">{member.person.name}</p>
-                      <p className="truncate text-xs text-slate-400">as {member.character.name}</p>
+                      <p className="truncate text-sm font-semibold text-zinc-100">{member.person.name}</p>
+                      <p className="truncate text-xs text-zinc-400">as {member.character.name}</p>
                     </div>
                   </li>
                 ))}
@@ -190,45 +209,50 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
             )}
           </section>
 
-          <section className="mt-10">
-            <h2 className="text-xl font-bold text-slate-50">
+          <section className="mt-phi-lg">
+            <h2 className="text-phi font-bold tracking-tight text-white">
               Episodes {detail ? `(${detail._embedded.episodes.length})` : ''}
             </h2>
             {!detail || seasons.length === 0 ? (
-              <p className="mt-3 text-sm text-slate-400">No episode information available for this show.</p>
+              <p className="mt-3 text-sm text-zinc-400">No episode information available for this show.</p>
             ) : (
-              <div className="mt-4 space-y-3">
+              <div className="mt-phi space-y-3">
                 {seasons.map(([season, episodes]) => {
                   const open = openSeason === null ? season === seasons[0][0] : openSeason === season
                   return (
-                    <div key={season} className="overflow-hidden rounded-xl bg-slate-900 ring-1 ring-slate-800">
+                    <div key={season} className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
                       <button
                         type="button"
                         onClick={() => setOpenSeason(open ? -1 : season)}
-                        className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-semibold text-slate-100 hover:bg-slate-800/60"
+                        className="flex w-full items-center justify-between gap-3 px-phi py-3.5 text-left text-sm font-semibold text-zinc-100 transition hover:bg-raised/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold"
                         aria-expanded={open}
                       >
                         <span>
                           Season {season} · {episodes.length} episode{episodes.length === 1 ? '' : 's'}
                         </span>
-                        <span className="text-slate-400">{open ? '▲' : '▼'}</span>
+                        <ChevronDown
+                          size={16}
+                          strokeWidth={2}
+                          aria-hidden
+                          className={`shrink-0 text-zinc-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                        />
                       </button>
                       {open && (
-                        <ul className="divide-y divide-slate-800 border-t border-slate-800">
+                        <ul className="divide-y divide-line border-t border-line">
                           {episodes.map((episode) => (
-                            <li key={episode.id} className="px-4 py-3">
+                            <li key={episode.id} className="px-phi py-3.5">
                               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                                <p className="text-sm font-medium text-slate-100">
+                                <p className="text-sm font-medium text-zinc-100">
                                   S{episode.season}E{episode.number ?? '?'} — {episode.name}
                                 </p>
-                                <span className="text-xs text-slate-400">
+                                <span className="text-xs text-zinc-400">
                                   {episode.airdate ?? 'Unaired'}
                                   {episode.runtime ? ` · ${episode.runtime} min` : ''}
                                   {episode.rating.average != null ? ` · ★ ${episode.rating.average.toFixed(1)}` : ''}
                                 </span>
                               </div>
                               {episode.summary && (
-                                <p className="mt-1 line-clamp-2 text-sm text-slate-400">{stripHtml(episode.summary)}</p>
+                                <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-400">{stripHtml(episode.summary)}</p>
                               )}
                             </li>
                           ))}

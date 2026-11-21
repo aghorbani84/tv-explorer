@@ -2,6 +2,31 @@
 
 @theme {
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* φ ≈ 1.618 proportion system.
+     Spacing scale: 13 / 21 / 34 / 55 px (each step × φ, rounded).
+     Type scale:    13 / 21 / 34 px. */
+  --spacing-phi-sm: 13px;
+  --spacing-phi: 21px;
+  --spacing-phi-lg: 34px;
+  --spacing-phi-xl: 55px;
+
+  --text-phi-sm: 13px;
+  --text-phi-sm--line-height: 1.45;
+  --text-phi: 21px;
+  --text-phi--line-height: 1.3;
+  --text-phi-lg: 34px;
+  --text-phi-lg--line-height: 1.15;
+
+  /* Cinematic dark look (spotify-like media grid):
+     one zinc neutral family, one gold accent — the rating color,
+     the one number that gets to be big. Status colors mean status. */
+  --color-canvas: #0a0a0e;
+  --color-surface: #141419;
+  --color-raised: #1d1d25;
+  --color-line: #26262f;
+  --color-gold: #f5c518;
+  --color-gold-deep: #cfa408;
 }
 
 html {
@@ -9,5 +34,39 @@ html {
 }
 
 body {
-  background-color: #0b0f17;
+  background-color: var(--color-canvas);
+}
+
+::selection {
+  background-color: rgb(245 197 24 / 0.35);
+  color: #fff;
+}
+
+/* Quiet entrance: content settles once, 6px, no bounce.
+   The delay is set inline per card so the grid reads top to bottom. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise {
+  animation: rise 0.45s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
