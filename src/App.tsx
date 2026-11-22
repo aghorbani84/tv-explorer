@@ -4,7 +4,9 @@ import useSWR from 'swr'
 import { ShowCard } from './components/ShowCard'
 import { ShowDetailView } from './components/ShowDetail'
 import { Spotlight } from './components/Spotlight'
+import { ThemeSwitcher } from './components/ThemeSwitcher'
 import { useFavorites } from './hooks/useFavorites'
+import { useTheme } from './hooks/useTheme'
 import {
   fetcher,
   searchShowsUrl,
@@ -44,12 +46,12 @@ function LoadingGrid() {
 function ApiError({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
     <div className="rounded-3xl bg-rose-500/10 p-phi-xl text-center ring-1 ring-rose-500/30">
-      <TriangleAlert size={22} className="mx-auto text-rose-300" aria-hidden />
-      <p className="mt-3 text-phi font-semibold text-rose-200">Couldn&apos;t reach the TVMaze API</p>
-      <p className="mx-auto mt-2 max-w-md text-sm text-rose-200/80">
+      <TriangleAlert size={22} className="mx-auto text-rose-500 dark:text-rose-300" aria-hidden />
+      <p className="mt-3 text-phi font-semibold text-rose-700 dark:text-rose-200">Couldn&apos;t reach the TVMaze API</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-rose-700/80 dark:text-rose-200/80">
         The show catalog could not be loaded. Please check your internet connection and try again.
       </p>
-      <p className="mt-2 font-mono text-xs text-rose-200/60">{message}</p>
+      <p className="mt-2 font-mono text-xs text-rose-700/60 dark:text-rose-200/60">{message}</p>
       <button
         type="button"
         onClick={onRetry}
@@ -61,6 +63,27 @@ function ApiError({ message, onRetry }: { message: string; onRetry: () => void }
   )
 }
 
+/** The one Faravahar accent (theme-spec §3): small gold inline SVG, footer only. */
+function Faravahar() {
+  return (
+    <svg
+      className="faravahar mx-auto mb-2 h-7 w-16 text-accent"
+      viewBox="0 0 64 28"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      aria-hidden
+    >
+      <circle cx="32" cy="11" r="4.5" />
+      <circle cx="32" cy="11" r="1.6" fill="currentColor" stroke="none" />
+      <path d="M32 6.5 V3 M32 15.5 V19" />
+      <path d="M27.5 11 C20 6 12 5 5 7 M27.5 11 C21 9 14 9 8 11 M27.5 11 C22 12 16 13 11 15" />
+      <path d="M36.5 11 C44 6 52 5 59 7 M36.5 11 C43 9 50 9 56 11 M36.5 11 C42 12 48 13 53 15" />
+      <path d="M29 19 L32 25 L35 19" />
+    </svg>
+  )
+}
+
 export default function App() {
   const [query, setQuery] = useState('')
   const [genre, setGenre] = useState('All genres')
@@ -68,6 +91,7 @@ export default function App() {
   const [selected, setSelected] = useState<Show | null>(null)
   const debouncedQuery = useDebouncedValue(query.trim(), 400)
   const { favorites, isFavorite, toggleFavorite } = useFavorites()
+  const theme = useTheme()
 
   // Trending: the first page of the TVMaze catalog, ranked by average rating.
   const {
@@ -135,8 +159,8 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas font-sans text-zinc-200">
-      <header className="sticky top-0 z-10 border-b border-line bg-canvas/85 backdrop-blur">
+    <div className="min-h-screen bg-bg font-sans text-ink">
+      <header className="lotus-pattern sticky top-0 z-10 border-b border-line bg-bg/85 backdrop-blur">
         <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-x-phi gap-y-3 px-4 py-3.5">
           <button
             type="button"
@@ -144,43 +168,47 @@ export default function App() {
               setSelected(null)
               setView('home')
             }}
-            className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+            className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="TV Explorer — back to Browse"
           >
-            <Tv size={20} strokeWidth={2} className="text-gold" aria-hidden />
-            <span className="text-lg font-bold tracking-tight text-white">TV Explorer</span>
+            <Tv size={20} strokeWidth={2} className="text-accent" aria-hidden />
+            <span className="font-display text-lg font-bold tracking-tight text-ink">TV Explorer</span>
           </button>
 
-          <nav className="ml-auto flex rounded-full bg-surface p-1 ring-1 ring-line" aria-label="Views">
-            <button
-              type="button"
-              onClick={() => {
-                setView('home')
-                setSelected(null)
-              }}
-              aria-pressed={view === 'home'}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
-                view === 'home' ? 'bg-gold font-semibold text-black' : 'text-zinc-300 hover:text-white'
-              }`}
-            >
-              Browse
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setView('favorites')
-                setSelected(null)
-              }}
-              aria-pressed={view === 'favorites'}
-              className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
-                view === 'favorites' ? 'bg-gold font-semibold text-black' : 'text-zinc-300 hover:text-white'
-              }`}
-            >
-              <Heart size={14} strokeWidth={2} fill={view === 'favorites' ? 'currentColor' : 'none'} aria-hidden />
-              Favorites ({favorites.length})
-            </button>
-          </nav>
+          <div className="ml-auto flex flex-wrap items-center gap-3">
+            <ThemeSwitcher {...theme} />
+            <nav className="flex rounded-full bg-surface p-1 ring-1 ring-line" aria-label="Views">
+              <button
+                type="button"
+                onClick={() => {
+                  setView('home')
+                  setSelected(null)
+                }}
+                aria-pressed={view === 'home'}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                  view === 'home' ? 'bg-accent font-semibold text-accent-ink' : 'text-muted hover:text-ink'
+                }`}
+              >
+                Browse
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setView('favorites')
+                  setSelected(null)
+                }}
+                aria-pressed={view === 'favorites'}
+                className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                  view === 'favorites' ? 'bg-accent font-semibold text-accent-ink' : 'text-muted hover:text-ink'
+                }`}
+              >
+                <Heart size={14} strokeWidth={2} fill={view === 'favorites' ? 'currentColor' : 'none'} aria-hidden />
+                Favorites ({favorites.length})
+              </button>
+            </nav>
+          </div>
         </div>
+        <div className="double-rule mx-auto max-w-7xl" aria-hidden />
       </header>
 
       <main className="mx-auto w-full max-w-7xl px-4 pb-16">
@@ -195,21 +223,21 @@ export default function App() {
           </div>
         ) : view === 'favorites' ? (
           <section className="pt-8">
-            <h1 className="text-phi font-bold tracking-tight text-white">Your Favorites</h1>
-            <p className="mt-1 text-sm text-zinc-400">
+            <h1 className="font-display text-phi font-bold tracking-tight text-ink">Your Favorites</h1>
+            <p className="mt-1 text-sm text-muted">
               Saved in this browser with localStorage — they stay here even if the API goes down.
             </p>
             {favorites.length === 0 ? (
               <div className="mt-phi-lg rounded-3xl bg-surface p-phi-xl text-center ring-1 ring-line">
-                <Heart size={22} className="mx-auto text-zinc-500" aria-hidden />
-                <p className="mt-3 text-phi font-semibold text-zinc-100">No favorites yet</p>
-                <p className="mt-2 text-sm text-zinc-400">
+                <Heart size={22} className="mx-auto text-muted" aria-hidden />
+                <p className="mt-3 text-phi font-semibold text-ink">No favorites yet</p>
+                <p className="mt-2 text-sm text-muted">
                   Browse shows and tap the heart on a poster to build your list.
                 </p>
                 <button
                   type="button"
                   onClick={() => setView('home')}
-                  className="mt-5 rounded-full bg-gold px-5 py-2 text-sm font-semibold text-black transition hover:bg-gold-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                  className="mt-5 rounded-full bg-accent px-5 py-2 text-sm font-semibold text-accent-ink transition hover:bg-accent-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 >
                   Browse shows
                 </button>
@@ -234,7 +262,7 @@ export default function App() {
             {/* Hero: the search is the focal object. Quiet when a query is active. */}
             <div className={debouncedQuery ? 'pt-8' : 'pt-phi-lg'}>
               {!debouncedQuery && (
-                <p className="mb-phi-sm text-phi-sm font-medium tracking-wide text-zinc-500">
+                <p className="mb-phi-sm text-phi-sm font-medium tracking-wide text-muted">
                   Live from TVMaze — no sign-up, no API key
                 </p>
               )}
@@ -245,7 +273,7 @@ export default function App() {
                 <Search
                   size={18}
                   strokeWidth={2}
-                  className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500"
+                  className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-muted"
                   aria-hidden
                 />
                 <input
@@ -258,14 +286,14 @@ export default function App() {
                     setView('home')
                   }}
                   placeholder="Search shows — try “Breaking Bad”…"
-                  className="h-phi-xl w-full rounded-2xl border border-line bg-surface pl-12 pr-12 text-[15px] text-zinc-100 shadow-lg shadow-black/30 placeholder:text-zinc-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/40"
+                  className="h-phi-xl w-full rounded-2xl border border-line bg-surface pl-12 pr-12 text-[15px] text-ink shadow-lg shadow-black/10 placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40 dark:shadow-black/30"
                 />
                 {query && (
                   <button
                     type="button"
                     onClick={() => setQuery('')}
                     aria-label="Clear search"
-                    className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-zinc-400 transition hover:bg-raised hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                    className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-muted transition hover:bg-raised hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   >
                     <X size={16} strokeWidth={2} aria-hidden />
                   </button>
@@ -286,10 +314,10 @@ export default function App() {
 
             <div className="mt-phi-lg flex flex-wrap items-end justify-between gap-4">
               <div>
-                <h1 className="text-phi font-bold tracking-tight text-white">
+                <h1 className="font-display text-phi font-bold tracking-tight text-ink">
                   {debouncedQuery ? `Results for “${debouncedQuery}”` : 'Trending Shows'}
                 </h1>
-                <p className="mt-1 text-sm text-zinc-400">
+                <p className="mt-1 text-sm text-muted">
                   {debouncedQuery
                     ? 'Live results from the TVMaze search API.'
                     : 'The highest-rated shows on TVMaze right now.'}
@@ -304,10 +332,10 @@ export default function App() {
                   type="button"
                   onClick={() => setGenre(g)}
                   aria-pressed={genre === g}
-                  className={`rounded-full px-3.5 py-1.5 text-phi-sm font-medium ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
+                  className={`rounded-full px-3.5 py-1.5 text-phi-sm font-medium ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                     genre === g
-                      ? 'bg-gold font-semibold text-black ring-gold'
-                      : 'bg-surface text-zinc-300 ring-line hover:ring-zinc-500'
+                      ? 'bg-accent font-semibold text-accent-ink ring-accent'
+                      : 'bg-surface text-muted ring-line hover:ring-muted'
                   }`}
                 >
                   {g}
@@ -327,9 +355,9 @@ export default function App() {
 
               {!isLoading && !error && debouncedQuery && visibleShows.length === 0 && (
                 <div className="rounded-3xl bg-surface p-phi-xl text-center ring-1 ring-line">
-                  <SearchX size={22} className="mx-auto text-zinc-500" aria-hidden />
-                  <p className="mt-3 text-phi font-semibold text-zinc-100">No shows found</p>
-                  <p className="mt-2 text-sm text-zinc-400">
+                  <SearchX size={22} className="mx-auto text-muted" aria-hidden />
+                  <p className="mt-3 text-phi font-semibold text-ink">No shows found</p>
+                  <p className="mt-2 text-sm text-muted">
                     Nothing on TVMaze matches “{debouncedQuery}”. Try a different title or spelling.
                   </p>
                 </div>
@@ -337,7 +365,7 @@ export default function App() {
 
               {!isLoading && !error && visibleShows.length > 0 && (
                 <>
-                  <p className="mb-4 text-sm text-zinc-400">
+                  <p className="mb-4 text-sm text-muted">
                     {visibleShows.length} show{visibleShows.length === 1 ? '' : 's'}
                     {genre !== 'All genres' ? ` in ${genre}` : ''}
                   </p>
@@ -360,12 +388,15 @@ export default function App() {
         )}
       </main>
 
-      <footer className="border-t border-line py-phi text-center text-xs text-zinc-500">
-        Data from the{' '}
-        <a href="https://www.tvmaze.com/api" target="_blank" rel="noreferrer" className="text-gold hover:underline">
-          TVMaze API
-        </a>{' '}
-        — free, no API key required. Built with React, TypeScript, SWR and Tailwind CSS.
+      <footer className="border-t border-line py-phi text-center text-xs text-muted">
+        <Faravahar />
+        <p>
+          Data from the{' '}
+          <a href="https://www.tvmaze.com/api" target="_blank" rel="noreferrer" className="text-secondary hover:underline">
+            TVMaze API
+          </a>{' '}
+          — free, no API key required. Built with React, TypeScript, SWR and Tailwind CSS.
+        </p>
       </footer>
     </div>
   )

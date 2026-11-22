@@ -14,15 +14,15 @@ interface ShowDetailProps {
 function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
     <div className="rounded-2xl bg-rose-500/10 p-phi-xl text-center ring-1 ring-rose-500/30">
-      <TriangleAlert size={22} className="mx-auto text-rose-300" aria-hidden />
-      <p className="mt-3 text-phi font-semibold text-rose-200">Couldn&apos;t load show details</p>
-      <p className="mx-auto mt-2 max-w-md text-sm text-rose-200/80">
+      <TriangleAlert size={22} className="mx-auto text-rose-500 dark:text-rose-300" aria-hidden />
+      <p className="mt-3 text-phi font-semibold text-rose-700 dark:text-rose-200">Couldn&apos;t load show details</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-rose-700 dark:text-rose-200/80">
         The TVMaze API appears to be unreachable right now. {message}
       </p>
       <button
         type="button"
         onClick={onRetry}
-        className="mt-5 rounded-full bg-rose-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-rose-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
+        className="mt-5 rounded-full bg-rose-500 px-5 py-2 text-sm font-medium text-ink transition hover:bg-rose-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
       >
         Try again
       </button>
@@ -43,7 +43,7 @@ function DetailSkeleton() {
           <div className="mt-2 h-4 w-3/4 rounded bg-raised" />
         </div>
       </div>
-      <p className="mt-phi-lg text-sm text-zinc-400">Loading show details from TVMaze…</p>
+      <p className="mt-phi-lg text-sm text-muted">Loading show details from TVMaze…</p>
     </div>
   )
 }
@@ -74,7 +74,7 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
       <button
         type="button"
         onClick={onBack}
-        className="mb-phi flex items-center gap-2 rounded-full bg-surface px-4 py-2 text-sm font-medium text-zinc-200 ring-1 ring-line transition hover:bg-raised hover:ring-zinc-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+        className="mb-phi flex items-center gap-2 rounded-full bg-surface px-4 py-2 text-sm font-medium text-ink ring-1 ring-line transition hover:bg-raised hover:ring-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       >
         <ArrowLeft size={16} strokeWidth={2} aria-hidden />
         Back to results
@@ -97,72 +97,72 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
                 <img
                   src={show.image.original}
                   alt={`${show.name} poster`}
-                  className="w-40 self-start rounded-2xl object-cover shadow-2xl shadow-black/60 ring-1 ring-white/10 sm:w-52"
+                  className="w-40 self-start rounded-2xl object-cover shadow-2xl shadow-black/60 ring-1 ring-line sm:w-52"
                 />
               ) : (
-                <div className="flex h-80 w-40 items-center justify-center rounded-2xl bg-raised text-sm text-zinc-400 sm:w-52">
+                <div className="flex h-80 w-40 items-center justify-center rounded-2xl bg-raised text-sm text-muted sm:w-52">
                   No poster available
                 </div>
               )}
 
               <div className="min-w-0 flex-1">
-                <h1 className="text-phi-lg font-bold leading-tight tracking-tight text-white">{show.name}</h1>
+                <h1 className="text-phi-lg font-bold leading-tight tracking-tight text-ink">{show.name}</h1>
 
                 {/* The one number that gets to be big. */}
                 <p className="mt-3 flex items-baseline gap-2">
-                  <span className="flex items-center gap-1.5 text-phi font-bold leading-none text-gold">
+                  <span className="flex items-center gap-1.5 text-phi font-bold leading-none text-accent-strong">
                     <Star size={18} strokeWidth={0} fill="currentColor" aria-hidden />
                     {formatRating(show.rating.average)}
                   </span>
-                  <span className="text-sm text-zinc-500">/ 10 · TVMaze rating</span>
+                  <span className="text-sm text-muted">/ 10 · TVMaze rating</span>
                 </p>
 
                 <dl className="mt-phi grid grid-cols-2 gap-x-phi gap-y-3 text-sm sm:grid-cols-3">
                   <div>
-                    <dt className="text-xs text-zinc-500">Status</dt>
-                    <dd className="mt-0.5 font-medium text-zinc-100">{show.status}</dd>
+                    <dt className="text-xs text-muted">Status</dt>
+                    <dd className="mt-0.5 font-medium text-ink">{show.status}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-zinc-500">Network</dt>
-                    <dd className="mt-0.5 font-medium text-zinc-100">{networkName}</dd>
+                    <dt className="text-xs text-muted">Network</dt>
+                    <dd className="mt-0.5 font-medium text-ink">{networkName}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-zinc-500">Premiered</dt>
-                    <dd className="mt-0.5 font-medium text-zinc-100">{show.premiered ?? 'Unknown'}</dd>
+                    <dt className="text-xs text-muted">Premiered</dt>
+                    <dd className="mt-0.5 font-medium text-ink">{show.premiered ?? 'Unknown'}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-zinc-500">Ended</dt>
-                    <dd className="mt-0.5 font-medium text-zinc-100">{show.ended ?? '—'}</dd>
+                    <dt className="text-xs text-muted">Ended</dt>
+                    <dd className="mt-0.5 font-medium text-ink">{show.ended ?? '—'}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-zinc-500">Language</dt>
-                    <dd className="mt-0.5 font-medium text-zinc-100">{show.language ?? 'Unknown'}</dd>
+                    <dt className="text-xs text-muted">Language</dt>
+                    <dd className="mt-0.5 font-medium text-ink">{show.language ?? 'Unknown'}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-zinc-500">Runtime</dt>
-                    <dd className="mt-0.5 font-medium text-zinc-100">{show.runtime ? `${show.runtime} min` : 'Unknown'}</dd>
+                    <dt className="text-xs text-muted">Runtime</dt>
+                    <dd className="mt-0.5 font-medium text-ink">{show.runtime ? `${show.runtime} min` : 'Unknown'}</dd>
                   </div>
                 </dl>
 
                 <div className="mt-phi flex flex-wrap gap-1.5">
                   {show.genres.map((genre) => (
-                    <span key={genre} className="rounded-full bg-gold/10 px-3 py-1 text-xs font-medium text-gold ring-1 ring-gold/25">
+                    <span key={genre} className="rounded-full bg-accent-soft px-3 py-1 text-xs font-medium text-accent-strong ring-1 ring-accent/25">
                       {genre}
                     </span>
                   ))}
                 </div>
 
-                <p className="mt-phi max-w-3xl text-[15px] leading-relaxed text-zinc-300">{summary || 'No summary available.'}</p>
+                <p className="mt-phi max-w-3xl text-[15px] leading-relaxed text-ink/85">{summary || 'No summary available.'}</p>
 
                 <div className="mt-phi flex flex-wrap gap-3">
                   <button
                     type="button"
                     onClick={() => onToggleFavorite(show)}
                     aria-pressed={isFavorite}
-                    className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
+                    className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                       isFavorite
-                        ? 'bg-rose-500/15 text-rose-300 ring-rose-500/40 hover:bg-rose-500/25'
-                        : 'bg-gold font-semibold text-black hover:bg-gold-deep'
+                        ? 'bg-rose-500/15 text-rose-500 dark:text-rose-300 ring-rose-500/40 hover:bg-rose-500/25'
+                        : 'bg-accent font-semibold text-accent-ink hover:bg-accent-deep'
                     }`}
                   >
                     <Heart size={16} strokeWidth={2} fill={isFavorite ? 'currentColor' : 'none'} aria-hidden />
@@ -173,7 +173,7 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
                       href={show.officialSite}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-2 rounded-full bg-raised px-5 py-2.5 text-sm font-medium text-zinc-100 ring-1 ring-line transition hover:ring-zinc-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                      className="flex items-center gap-2 rounded-full bg-raised px-5 py-2.5 text-sm font-medium text-ink ring-1 ring-line transition hover:ring-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     >
                       Official site
                       <ExternalLink size={14} strokeWidth={2} aria-hidden />
@@ -185,23 +185,23 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
           </section>
 
           <section className="mt-phi-lg">
-            <h2 className="text-phi font-bold tracking-tight text-white">Cast</h2>
+            <h2 className="text-phi font-bold tracking-tight text-ink">Cast</h2>
             {!detail || detail._embedded.cast.length === 0 ? (
-              <p className="mt-3 text-sm text-zinc-400">No cast information available for this show.</p>
+              <p className="mt-3 text-sm text-muted">No cast information available for this show.</p>
             ) : (
               <ul className="mt-phi grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                 {detail._embedded.cast.slice(0, 12).map((member) => (
-                  <li key={member.person.id} className="flex items-center gap-3 rounded-2xl bg-surface p-phi-sm ring-1 ring-line transition hover:ring-gold/30">
+                  <li key={member.person.id} className="flex items-center gap-3 rounded-2xl bg-surface p-phi-sm ring-1 ring-line transition hover:ring-accent/30">
                     {member.person.image ? (
-                      <img src={member.person.image.medium} alt={member.person.name} loading="lazy" className="h-14 w-14 shrink-0 rounded-full object-cover ring-1 ring-white/10" />
+                      <img src={member.person.image.medium} alt={member.person.name} loading="lazy" className="h-14 w-14 shrink-0 rounded-full object-cover ring-1 ring-line" />
                     ) : (
-                      <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-raised text-lg font-semibold text-zinc-300">
+                      <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-raised text-lg font-semibold text-ink/85">
                         {member.person.name.charAt(0)}
                       </span>
                     )}
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-zinc-100">{member.person.name}</p>
-                      <p className="truncate text-xs text-zinc-400">as {member.character.name}</p>
+                      <p className="truncate text-sm font-semibold text-ink">{member.person.name}</p>
+                      <p className="truncate text-xs text-muted">as {member.character.name}</p>
                     </div>
                   </li>
                 ))}
@@ -210,11 +210,11 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
           </section>
 
           <section className="mt-phi-lg">
-            <h2 className="text-phi font-bold tracking-tight text-white">
+            <h2 className="text-phi font-bold tracking-tight text-ink">
               Episodes {detail ? `(${detail._embedded.episodes.length})` : ''}
             </h2>
             {!detail || seasons.length === 0 ? (
-              <p className="mt-3 text-sm text-zinc-400">No episode information available for this show.</p>
+              <p className="mt-3 text-sm text-muted">No episode information available for this show.</p>
             ) : (
               <div className="mt-phi space-y-3">
                 {seasons.map(([season, episodes]) => {
@@ -224,7 +224,7 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
                       <button
                         type="button"
                         onClick={() => setOpenSeason(open ? -1 : season)}
-                        className="flex w-full items-center justify-between gap-3 px-phi py-3.5 text-left text-sm font-semibold text-zinc-100 transition hover:bg-raised/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold"
+                        className="flex w-full items-center justify-between gap-3 px-phi py-3.5 text-left text-sm font-semibold text-ink transition hover:bg-raised/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
                         aria-expanded={open}
                       >
                         <span>
@@ -234,7 +234,7 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
                           size={16}
                           strokeWidth={2}
                           aria-hidden
-                          className={`shrink-0 text-zinc-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                          className={`shrink-0 text-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                         />
                       </button>
                       {open && (
@@ -242,17 +242,17 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
                           {episodes.map((episode) => (
                             <li key={episode.id} className="px-phi py-3.5">
                               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                                <p className="text-sm font-medium text-zinc-100">
+                                <p className="text-sm font-medium text-ink">
                                   S{episode.season}E{episode.number ?? '?'} — {episode.name}
                                 </p>
-                                <span className="text-xs text-zinc-400">
+                                <span className="text-xs text-muted">
                                   {episode.airdate ?? 'Unaired'}
                                   {episode.runtime ? ` · ${episode.runtime} min` : ''}
                                   {episode.rating.average != null ? ` · ★ ${episode.rating.average.toFixed(1)}` : ''}
                                 </span>
                               </div>
                               {episode.summary && (
-                                <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-400">{stripHtml(episode.summary)}</p>
+                                <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-muted">{stripHtml(episode.summary)}</p>
                               )}
                             </li>
                           ))}

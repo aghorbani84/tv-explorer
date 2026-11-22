@@ -1,7 +1,11 @@
 @import "tailwindcss";
 
+/* Dark variant driven by the theme switcher's data-mode attribute. */
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+
 @theme {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--display-font);
 
   /* φ ≈ 1.618 proportion system.
      Spacing scale: 13 / 21 / 34 / 55 px (each step × φ, rounded).
@@ -18,28 +22,189 @@
   --text-phi-lg: 34px;
   --text-phi-lg--line-height: 1.15;
 
-  /* Cinematic dark look (spotify-like media grid):
-     one zinc neutral family, one gold accent — the rating color,
-     the one number that gets to be big. Status colors mean status. */
-  --color-canvas: #0a0a0e;
-  --color-surface: #141419;
-  --color-raised: #1d1d25;
-  --color-line: #26262f;
-  --color-gold: #f5c518;
-  --color-gold-deep: #cfa408;
+  /* Palettes from the tailwindshades MCP (see ~/workspace/design-mcp/theme-spec.md). */
+  --color-gold-50: oklch(98.7% 0.019 114.232);
+  --color-gold-100: oklch(96.9% 0.051 115.213);
+  --color-gold-200: oklch(93.8% 0.093 113.56);
+  --color-gold-300: oklch(89.4% 0.132 110.131);
+  --color-gold-400: oklch(83.7% 0.144 103.956);
+  --color-gold-500: oklch(77.7% 0.133 98.067);
+  --color-gold-600: oklch(65.9% 0.117 87.854);
+  --color-gold-700: oklch(53.8% 0.098 78.462);
+  --color-gold-800: oklch(46.5% 0.083 73.927);
+  --color-gold-900: oklch(41.6% 0.069 69.728);
+  --color-gold-950: oklch(28.6% 0.048 65.833);
+
+  --color-lapis-50: oklch(97% 0.013 248.974);
+  --color-lapis-100: oklch(93.9% 0.031 249.955);
+  --color-lapis-200: oklch(89.5% 0.057 248.498);
+  --color-lapis-300: oklch(82.8% 0.1 245.596);
+  --color-lapis-400: oklch(73.3% 0.157 248.588);
+  --color-lapis-500: oklch(65.4% 0.203 253.792);
+  --color-lapis-600: oklch(58.6% 0.236 257.251);
+  --color-lapis-700: oklch(53.4% 0.234 258.746);
+  --color-lapis-800: oklch(47.7% 0.192 260.008);
+  --color-lapis-900: oklch(43.9% 0.141 259.892);
+  --color-lapis-950: oklch(28.2% 0.088 262.305);
+
+  --color-accent-50: oklch(96.2% 0.016 272.314);
+  --color-accent-100: oklch(93% 0.03 272.788);
+  --color-accent-200: oklch(87% 0.057 274.039);
+  --color-accent-300: oklch(78.5% 0.101 274.713);
+  --color-accent-400: oklch(67.3% 0.16 276.935);
+  --color-accent-500: oklch(58.5% 0.205 277.117);
+  --color-accent-600: oklch(51.1% 0.23 276.966);
+  --color-accent-700: oklch(45.7% 0.211 277.023);
+  --color-accent-800: oklch(39.8% 0.171 277.366);
+  --color-accent-900: oklch(35.9% 0.126 278.697);
+  --color-accent-950: oklch(25.7% 0.079 281.288);
+
+  /* Semantic tokens — re-mapped per data-style / data-mode below.
+     Components read these (or the legacy aliases) only; never a raw color. */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-line: var(--line);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-deep: var(--accent-deep);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-strong: var(--accent-strong);
+  --color-secondary: var(--secondary);
+
+  /* Legacy aliases from the pre-redesign dark theme, now semantic. */
+  --color-canvas: var(--bg);
+  --color-gold: var(--accent);
+  --color-gold-deep: var(--accent-deep);
 }
 
-html {
+/* ---- The four combinations (theme-spec §1) ---- */
+
+/* Modern light (default) */
+:root,
+:root[data-style="modern"][data-mode="light"] {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --raised: #f1f5f9;
+  --text: #0f172a;
+  --muted: #475569;
+  --line: #e2e8f0;
+  --accent: oklch(51.1% 0.23 276.966);
+  --accent-ink: #ffffff;
+  --accent-deep: oklch(45.7% 0.211 277.023);
+  --accent-soft: oklch(96.2% 0.016 272.314);
+  --accent-strong: oklch(51.1% 0.23 276.966);
+  --secondary: oklch(51.1% 0.23 276.966);
+  --display-font: "Inter", ui-sans-serif, system-ui, sans-serif;
+  color-scheme: light;
+}
+
+/* Modern dark */
+:root[data-style="modern"][data-mode="dark"] {
+  --bg: #0b1220;
+  --surface: #111c2e;
+  --raised: #1a2942;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --line: #1e293b;
+  --accent: oklch(67.3% 0.16 276.935);
+  --accent-ink: oklch(25.7% 0.079 281.288);
+  --accent-deep: oklch(78.5% 0.101 274.713);
+  --accent-soft: oklch(25.7% 0.079 281.288);
+  --accent-strong: oklch(78.5% 0.101 274.713);
+  --secondary: oklch(67.3% 0.16 276.935);
   color-scheme: dark;
 }
 
+/* Achaemenid light — sandstone + gold + lapis */
+:root[data-style="achaemenid"][data-mode="light"] {
+  --bg: #f5efe3;
+  --surface: #fffdf6;
+  --raised: #fbf6ea;
+  --text: #2b2118;
+  --muted: #7a6a55;
+  --line: #d9c9a8;
+  --accent: oklch(65.9% 0.117 87.854);
+  --accent-ink: oklch(28.6% 0.048 65.833);
+  --accent-deep: oklch(53.8% 0.098 78.462);
+  --accent-soft: oklch(96.9% 0.051 115.213);
+  --accent-strong: oklch(53.8% 0.098 78.462);
+  --secondary: oklch(53.4% 0.234 258.746);
+  --display-font: "Cinzel", Georgia, "Times New Roman", serif;
+  color-scheme: light;
+}
+
+/* Achaemenid dark — basalt + gold + lapis */
+:root[data-style="achaemenid"][data-mode="dark"] {
+  --bg: #171310;
+  --surface: #221b15;
+  --raised: #2c241b;
+  --text: #ece0c8;
+  --muted: #a89880;
+  --line: #3d3226;
+  --accent: oklch(83.7% 0.144 103.956);
+  --accent-ink: oklch(28.6% 0.048 65.833);
+  --accent-deep: oklch(89.4% 0.132 110.131);
+  --accent-soft: oklch(28.6% 0.048 65.833);
+  --accent-strong: oklch(83.7% 0.144 103.956);
+  --secondary: oklch(73.3% 0.157 248.588);
+  --display-font: "Cinzel", Georgia, "Times New Roman", serif;
+  color-scheme: dark;
+}
+
+/* Achaemenid: carved, squarer radius (theme-spec §1). */
+:root[data-style="achaemenid"] {
+  --radius-2xl: 0.375rem;
+  --radius-3xl: 0.5rem;
+  --radius-xl: 0.375rem;
+  --radius-lg: 0.375rem;
+}
+
 body {
-  background-color: var(--color-canvas);
+  background-color: var(--bg);
+  color: var(--text);
 }
 
 ::selection {
-  background-color: rgb(245 197 24 / 0.35);
-  color: #fff;
+  background-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  color: var(--text);
+}
+
+/* ---- Achaemenid motifs (theme-spec §3) ---- */
+
+/* Thin double gold rule under the app header — Achaemenid only. */
+.double-rule {
+  display: none;
+  height: 5px;
+  border-top: 1px solid var(--accent);
+  border-bottom: 1px solid var(--accent);
+}
+:root[data-style="achaemenid"] .double-rule {
+  display: block;
+}
+
+/* Subtle fluted-column / lotus-petal SVG pattern, header background —
+   Achaemenid only, line color at ~40% opacity, inline SVG, no assets. */
+:root[data-style="achaemenid"] .lotus-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='24' viewBox='0 0 48 24'%3E%3Cg fill='none' stroke='%23d9c9a8' stroke-opacity='0.4' stroke-width='1'%3E%3Cpath d='M12 24 V8 M12 8 C8 12 8 18 12 24 M12 8 C16 12 16 18 12 24'/%3E%3Cpath d='M36 24 V8 M36 8 C32 12 32 18 36 24 M36 8 C40 12 40 18 36 24'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: bottom;
+  background-size: 48px 24px;
+}
+
+/* The ONE Faravahar accent (footer, gold, ≤28px tall) — Achaemenid only. */
+.faravahar {
+  display: none;
+}
+:root[data-style="achaemenid"] .faravahar {
+  display: inline-block;
+}
+
+/* Achaemenid headings: Cinzel, letterspaced. */
+:root[data-style="achaemenid"] .font-display {
+  letter-spacing: 0.04em;
 }
 
 /* Quiet entrance: content settles once, 6px, no bounce.
@@ -69,4 +234,862 @@ body {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
+}
+
+/* ── Wensity Base Tokens — generated by the Wensity CLI.
+      Edit these values to retheme your app; re-running `wensity init --preset`
+      replaces this block. ── */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+}
+:root {
+  --background: #fafafa;
+  --foreground: #0a0a0a;
+  --surface: #ffffff;
+  --surface-muted: #f4f4f5;
+  --muted: #f4f4f5;
+  --muted-foreground: #52525b;
+  --border: rgba(10, 10, 10, 0.08);
+  --border-strong: rgba(10, 10, 10, 0.16);
+}
+.dark {
+  --background: #0a0a0b;
+  --foreground: #f5f5f6;
+  --surface: #111113;
+  --surface-muted: #18181b;
+  --muted: #1c1c1f;
+  --muted-foreground: #a1a1aa;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+}
+/* ── End Wensity Base Tokens ── */
+
+/* ── Wensity Primitive Tokens — generated by the Wensity CLI.
+      Edit these values to retheme your components; re-running
+      `wensity init --preset` replaces this block. ── */
+@theme inline {
+  --color-primitive-surface-elevated: var(--primitive-surface-elevated);
+  --color-primitive-surface-overlay: var(--primitive-surface-overlay);
+  --color-primitive-surface-hover: var(--primitive-surface-hover);
+  --color-primitive-surface-active: var(--primitive-surface-active);
+  --color-primitive-surface-selected: var(--primitive-surface-selected);
+  --color-primitive-border-subtle: var(--primitive-border-subtle);
+  --color-primitive-ring: var(--primitive-ring);
+  --color-primitive-text-secondary: var(--primitive-text-secondary);
+  --color-primitive-text-placeholder: var(--primitive-text-placeholder);
+  --color-primitive-text-inverse: var(--primitive-text-inverse);
+  --color-primitive-destructive: var(--primitive-destructive);
+  --color-primitive-destructive-hover: var(--primitive-destructive-hover);
+  --color-primitive-destructive-active: var(--primitive-destructive-active);
+  --color-primitive-destructive-foreground: var(--primitive-destructive-foreground);
+  --color-primitive-destructive-surface: var(--primitive-destructive-surface);
+  --color-primitive-destructive-border: var(--primitive-destructive-border);
+  --color-primitive-success: var(--primitive-success);
+  --color-primitive-warning: var(--primitive-warning);
+  --color-primitive-info: var(--primitive-info);
+  --color-primitive-control-solid: var(--primitive-control-solid);
+  --color-primitive-control-solid-hover: var(--primitive-control-solid-hover);
+  --color-primitive-control-solid-active: var(--primitive-control-solid-active);
+  --color-primitive-control-solid-foreground: var(--primitive-control-solid-foreground);
+  --color-primitive-chart-1: var(--primitive-chart-1);
+  --color-primitive-chart-2: var(--primitive-chart-2);
+  --color-primitive-chart-3: var(--primitive-chart-3);
+  --color-primitive-chart-4: var(--primitive-chart-4);
+  --color-primitive-chart-5: var(--primitive-chart-5);
+  --color-primitive-chart-6: var(--primitive-chart-6);
+  --radius-primitive: var(--primitive-radius);
+  --radius-primitive-control: var(--primitive-radius-control);
+  --radius-primitive-control-sm: var(--primitive-radius-control-sm);
+  --radius-primitive-surface: var(--primitive-radius-surface);
+  --radius-primitive-popup: var(--primitive-radius-popup);
+  --radius-primitive-item: var(--primitive-radius-item);
+  --font-primitive-sans: var(--primitive-font-sans);
+  --font-primitive-display: var(--primitive-font-display);
+  --font-primitive-mono: var(--primitive-font-mono);
+  --spacing-primitive-control-height-sm: var(--primitive-control-height-sm);
+  --spacing-primitive-control-height-md: var(--primitive-control-height-md);
+  --spacing-primitive-control-height-lg: var(--primitive-control-height-lg);
+}
+:root {
+  --primitive-surface-elevated: #ffffff;
+  --primitive-surface-overlay: #ffffff;
+  --primitive-surface-hover: color-mix(in srgb, var(--foreground) 4%, transparent);
+  --primitive-surface-active: color-mix(in srgb, var(--foreground) 7%, transparent);
+  --primitive-surface-selected: color-mix(in srgb, var(--foreground) 6%, transparent);
+  --primitive-border-subtle: color-mix(in srgb, var(--border) 60%, transparent);
+  --primitive-ring: color-mix(in srgb, var(--foreground) 45%, transparent);
+  --primitive-text-secondary: color-mix(in srgb, var(--foreground) 72%, transparent);
+  --primitive-text-placeholder: color-mix(in srgb, var(--muted-foreground) 85%, transparent);
+  --primitive-radius: 0.75rem;
+  --primitive-font-sans: var(--font-sans);
+  --primitive-font-display: var(--font-display);
+  --primitive-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --primitive-control-solid: #24292d;
+  --primitive-control-solid-hover: #2c3237;
+  --primitive-control-solid-active: #1e2326;
+  --primitive-control-solid-foreground: #ffffff;
+  --primitive-chart-1: #2a78d6;
+  --primitive-chart-2: #1baf7a;
+  --primitive-chart-3: #eda100;
+  --primitive-chart-4: #008300;
+  --primitive-chart-5: #4a3aa7;
+  --primitive-chart-6: #e34948;
+  --primitive-text-inverse: #ffffff;
+  --primitive-text-hint: 0.6875rem;
+  --primitive-destructive: #dc2626;
+  --primitive-destructive-hover: #b91c1c;
+  --primitive-destructive-active: #991b1b;
+  --primitive-destructive-foreground: #ffffff;
+  --primitive-destructive-surface: rgba(220, 38, 38, 0.10);
+  --primitive-destructive-border: rgba(220, 38, 38, 0.45);
+  --primitive-success: #047857;
+  --primitive-success-surface: rgba(4, 120, 87, 0.10);
+  --primitive-success-border: rgba(4, 120, 87, 0.45);
+  --primitive-warning: #b45309;
+  --primitive-warning-surface: rgba(180, 83, 9, 0.10);
+  --primitive-warning-border: rgba(180, 83, 9, 0.45);
+  --primitive-info: #0369a1;
+  --primitive-info-surface: rgba(3, 105, 161, 0.10);
+  --primitive-info-border: rgba(3, 105, 161, 0.45);
+  --primitive-radius-control: var(--primitive-radius);
+  --primitive-radius-control-sm: min(calc(var(--primitive-radius) * 0.8), 12px);
+  --primitive-radius-surface: calc(var(--primitive-radius) * 1.4);
+  --primitive-radius-popup: var(--primitive-radius);
+  --primitive-radius-item: calc(var(--primitive-radius) * 0.8);
+  --primitive-control-height-sm: 2rem;
+  --primitive-control-height-md: 2.25rem;
+  --primitive-control-height-lg: 2.5rem;
+  --primitive-shadow-raised: 0 1px 1px -0.5px rgba(10, 10, 10, 0.08), 0 2px 6px -2px rgba(10, 10, 10, 0.08);
+  --primitive-shadow-overlay: 0 2px 4px -1px rgba(10, 10, 10, 0.06), 0 8px 16px -4px rgba(10, 10, 10, 0.08), 0 16px 32px -8px rgba(10, 10, 10, 0.14);
+  --primitive-shadow-modal: 0 4px 8px -2px rgba(10, 10, 10, 0.06), 0 16px 32px -8px rgba(10, 10, 10, 0.12), 0 32px 64px -16px rgba(10, 10, 10, 0.2);
+  --primitive-edge: rgba(10, 10, 10, 0.1);
+  --primitive-catchlight: rgba(10, 10, 10, 0.06);
+  --primitive-groove-shadow: rgba(10, 10, 10, 0.08);
+  --primitive-groove-highlight: rgba(255, 255, 255, 0.85);
+  --primitive-shadow-drop: 0 1px 1px -0.5px rgba(10, 10, 10, 0.1), 0 2px 4px -1px rgba(10, 10, 10, 0.06);
+  --primitive-shadow-recess: inset 0 2px 3px -1px rgba(10, 10, 10, 0.1);
+  --primitive-control-face: var(--primitive-surface-elevated);
+  --primitive-field-face: var(--primitive-surface-elevated);
+  --primitive-well: rgba(10, 10, 10, 0.045);
+  --primitive-shadow-well: inset 0 1px 2px 0 rgba(10, 10, 10, 0.06);
+  --primitive-tint-hover: rgba(10, 10, 10, 0.045);
+  --primitive-tint-press: rgba(10, 10, 10, 0.06);
+  --primitive-footer: color-mix(in srgb, var(--primitive-surface-elevated) 97%, black);
+  --primitive-overlay-face: var(--primitive-surface-overlay);
+  --primitive-frame-face: color-mix(in srgb, var(--primitive-surface-elevated) 97%, black);
+  --primitive-z-overlay: 100;
+  --primitive-z-popover: 130;
+  --primitive-z-toast: 140;
+  --primitive-backdrop: rgba(0, 0, 0, 0.6);
+  --primitive-motion-fast: 80ms;
+  --primitive-motion-fast-exit: 60ms;
+  --primitive-motion-moderate: 160ms;
+  --primitive-motion-moderate-exit: 120ms;
+  --primitive-motion-slow: 240ms;
+  --primitive-motion-slow-exit: 160ms;
+  --primitive-ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+.dark {
+  --primitive-surface-elevated: #0f0f10;
+  --primitive-surface-overlay: #141415;
+  --primitive-surface-hover: color-mix(in srgb, var(--foreground) 5%, transparent);
+  --primitive-surface-active: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --primitive-surface-selected: color-mix(in srgb, var(--foreground) 8%, transparent);
+  --primitive-border-subtle: color-mix(in srgb, var(--border) 60%, transparent);
+  --primitive-ring: color-mix(in srgb, var(--foreground) 45%, transparent);
+  --primitive-text-secondary: color-mix(in srgb, var(--foreground) 72%, transparent);
+  --primitive-text-placeholder: color-mix(in srgb, var(--muted-foreground) 85%, transparent);
+  --primitive-radius: 0.75rem;
+  --primitive-font-sans: var(--font-sans);
+  --primitive-font-display: var(--font-display);
+  --primitive-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --primitive-control-solid: #f5f3ee;
+  --primitive-control-solid-hover: #ffffff;
+  --primitive-control-solid-active: #e8e4da;
+  --primitive-control-solid-foreground: #151719;
+  --primitive-chart-1: #3987e5;
+  --primitive-chart-2: #199e70;
+  --primitive-chart-3: #c98500;
+  --primitive-chart-4: #008300;
+  --primitive-chart-5: #9085e9;
+  --primitive-chart-6: #e66767;
+  --primitive-text-inverse: #151719;
+  --primitive-text-hint: 0.6875rem;
+  --primitive-destructive: #e11d2e;
+  --primitive-destructive-hover: #c1121f;
+  --primitive-destructive-active: #a4161a;
+  --primitive-destructive-foreground: #ffffff;
+  --primitive-destructive-surface: rgba(225, 29, 46, 0.12);
+  --primitive-destructive-border: rgba(225, 29, 46, 0.52);
+  --primitive-success: #34d399;
+  --primitive-success-surface: rgba(52, 211, 153, 0.12);
+  --primitive-success-border: rgba(52, 211, 153, 0.45);
+  --primitive-warning: #fbbf24;
+  --primitive-warning-surface: rgba(251, 191, 36, 0.12);
+  --primitive-warning-border: rgba(251, 191, 36, 0.45);
+  --primitive-info: #38bdf8;
+  --primitive-info-surface: rgba(56, 189, 248, 0.12);
+  --primitive-info-border: rgba(56, 189, 248, 0.45);
+  --primitive-radius-control: var(--primitive-radius);
+  --primitive-radius-control-sm: min(calc(var(--primitive-radius) * 0.8), 12px);
+  --primitive-radius-surface: calc(var(--primitive-radius) * 1.4);
+  --primitive-radius-popup: var(--primitive-radius);
+  --primitive-radius-item: calc(var(--primitive-radius) * 0.8);
+  --primitive-control-height-sm: 2rem;
+  --primitive-control-height-md: 2.25rem;
+  --primitive-control-height-lg: 2.5rem;
+  --primitive-shadow-raised: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.6), 0 2px 6px -2px rgba(0, 0, 0, 0.5);
+  --primitive-shadow-overlay: inset 0 1px 0 0 rgba(255, 255, 255, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.4), 0 8px 16px -4px rgba(0, 0, 0, 0.45), 0 16px 32px -8px rgba(0, 0, 0, 0.65);
+  --primitive-shadow-modal: inset 0 1px 0 0 rgba(255, 255, 255, 0.06), 0 4px 8px -2px rgba(0, 0, 0, 0.4), 0 16px 32px -8px rgba(0, 0, 0, 0.55), 0 32px 64px -16px rgba(0, 0, 0, 0.75);
+  --primitive-edge: rgba(255, 255, 255, 0.09);
+  --primitive-catchlight: rgba(255, 255, 255, 0.16);
+  --primitive-groove-shadow: rgba(0, 0, 0, 0.55);
+  --primitive-groove-highlight: rgba(255, 255, 255, 0.05);
+  --primitive-shadow-drop: 0 1px 1px -0.5px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  --primitive-shadow-recess: inset 0 2px 3px -1px rgba(0, 0, 0, 0.5);
+  --primitive-control-face: var(--primitive-frame-face);
+  --primitive-field-face: var(--primitive-frame-face);
+  --primitive-well: rgba(0, 0, 0, 0.35);
+  --primitive-shadow-well: inset 0 1px 2px 0 rgba(0, 0, 0, 0.45);
+  --primitive-tint-hover: rgba(255, 255, 255, 0.06);
+  --primitive-tint-press: rgba(0, 0, 0, 0.2);
+  --primitive-footer: color-mix(in srgb, var(--primitive-surface-elevated) 97%, white);
+  --primitive-overlay-face: color-mix(in srgb, var(--primitive-surface-overlay) 94%, white);
+  --primitive-frame-face: color-mix(in srgb, var(--primitive-surface-elevated) 97%, white);
+  --primitive-z-overlay: 100;
+  --primitive-z-popover: 130;
+  --primitive-z-toast: 140;
+  --primitive-backdrop: rgba(0, 0, 0, 0.6);
+  --primitive-motion-fast: 80ms;
+  --primitive-motion-fast-exit: 60ms;
+  --primitive-motion-moderate: 160ms;
+  --primitive-motion-moderate-exit: 120ms;
+  --primitive-motion-slow: 240ms;
+  --primitive-motion-slow-exit: 160ms;
+  --primitive-ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@layer base {
+  :where([data-wensity-primitive]) {
+    font-family: var(--primitive-font-sans);
+  }
+}
+
+/* Surface roles. An element opts in with data-surface="<role>"
+   (control, field, fill, flat, toggle, well, frame, panel, overlay, modal, footer);
+   override one part with a --surface-* variable. */
+@layer components {
+  [data-surface] {
+    --surface-tint: transparent;
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--surface-rim);
+    border-top-color: var(--surface-rim-top);
+    background-color: var(--surface-face);
+    background-image: linear-gradient(var(--surface-tint), var(--surface-tint));
+    --tw-shadow: var(--surface-depth);
+    box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000), var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  }
+  [data-surface="control"] {
+    --surface-face: var(--primitive-control-face);
+    --surface-rim: var(--primitive-edge);
+    --surface-rim-top: var(--primitive-catchlight);
+    --surface-depth: var(--primitive-shadow-drop);
+  }
+  [data-surface="field"] {
+    --surface-face: var(--primitive-field-face);
+    --surface-rim: var(--primitive-edge);
+    --surface-rim-top: var(--primitive-catchlight);
+    --surface-depth: var(--primitive-shadow-drop);
+  }
+  [data-surface="fill"] {
+    --surface-face: var(--primitive-control-solid);
+    --surface-rim: color-mix(in srgb, var(--surface-face) 88%, black);
+    --surface-rim-top: color-mix(in srgb, var(--surface-face) 80%, white);
+    --surface-depth: var(--primitive-shadow-drop);
+  }
+  [data-surface="flat"], [data-surface="toggle"], [data-surface="toggle-fill"] {
+    --surface-face: transparent;
+    --surface-rim: transparent;
+    --surface-rim-top: transparent;
+    --surface-depth: 0 0 #0000;
+  }
+  [data-surface="toggle"]:is([data-pressed]:not([data-pressed="false"]), [aria-pressed="true"]) {
+    --surface-face: var(--primitive-control-face);
+    --surface-rim: var(--primitive-edge);
+    --surface-rim-top: var(--primitive-catchlight);
+    --surface-depth: var(--primitive-shadow-drop);
+  }
+  [data-surface="toggle-fill"]:is([data-pressed]:not([data-pressed="false"]), [aria-pressed="true"]) {
+    --surface-face: var(--primitive-control-solid);
+    --surface-rim: color-mix(in srgb, var(--surface-face) 88%, black);
+    --surface-rim-top: color-mix(in srgb, var(--surface-face) 80%, white);
+    --surface-depth: var(--primitive-shadow-drop);
+  }
+  [data-surface="well"] {
+    --surface-face: var(--primitive-well);
+    --surface-rim: transparent;
+    --surface-rim-top: transparent;
+    --surface-depth: var(--primitive-shadow-well);
+  }
+  [data-surface="frame"] {
+    --surface-face: var(--primitive-frame-face);
+    --surface-rim: var(--primitive-edge);
+    --surface-rim-top: var(--primitive-catchlight);
+    --surface-depth: 0 0 #0000;
+  }
+  [data-surface="panel"] {
+    --surface-face: var(--primitive-surface-elevated);
+    --surface-rim: var(--primitive-edge);
+    --surface-rim-top: var(--primitive-edge);
+    --surface-depth: var(--primitive-shadow-raised);
+  }
+  [data-surface="overlay"] {
+    --surface-face: var(--primitive-overlay-face);
+    --surface-rim: var(--primitive-edge);
+    --surface-rim-top: var(--primitive-edge);
+    --surface-depth: var(--primitive-shadow-overlay);
+  }
+  [data-surface="modal"] {
+    --surface-face: var(--primitive-surface-elevated);
+    --surface-rim: var(--primitive-edge);
+    --surface-rim-top: var(--primitive-edge);
+    --surface-depth: var(--primitive-shadow-modal);
+  }
+  [data-surface="footer"] {
+    --surface-face: var(--primitive-footer);
+    --surface-rim: transparent;
+    --surface-rim-top: transparent;
+    --surface-depth: 0 0 #0000;
+    border-width: 0;
+    background-image: linear-gradient(to bottom, var(--primitive-groove-shadow) 0 1px, var(--primitive-groove-highlight) 1px 2px);
+    background-size: 100% 2px;
+    background-repeat: no-repeat;
+    background-position: top;
+  }
+  @media (hover: hover) {
+    [data-surface]:where(button, a[href], summary, label, [role="button"], [role="tab"], [role="combobox"], [role="option"], [role="menuitem"]):where(:not(:disabled, [data-disabled], [aria-disabled="true"])):hover {
+      --surface-tint: var(--primitive-tint-hover);
+    }
+    :is([data-surface="control"], [data-surface="field"]):is([data-pressed]:not([data-pressed="false"]), [aria-pressed="true"]):where(:not(:disabled, [data-disabled], [aria-disabled="true"])):hover {
+      --surface-tint: var(--primitive-tint-hover);
+    }
+  }
+  :is([data-surface="control"], [data-surface="field"]):is([data-pressed]:not([data-pressed="false"]), [aria-pressed="true"]) {
+    --surface-tint: var(--primitive-tint-press);
+    --surface-rim-top: var(--surface-rim);
+    --surface-depth: var(--primitive-shadow-recess);
+  }
+  :is([data-surface="control"], [data-surface="field"], [data-surface="fill"], [data-surface="toggle"], [data-surface="toggle-fill"]):is([aria-expanded="true"], [data-popup-open]):not(input, textarea) {
+    --surface-tint: var(--primitive-tint-press);
+    --surface-rim-top: var(--surface-rim);
+    --surface-depth: var(--primitive-shadow-recess);
+  }
+  :is([data-surface="control"], [data-surface="field"], [data-surface="fill"], [data-surface="toggle"], [data-surface="toggle-fill"]):where(button, a[href], summary, [role="button"], [role="tab"]):where(:not(:disabled, [data-disabled], [aria-disabled="true"])):active {
+    --surface-tint: var(--primitive-tint-press);
+    --surface-rim-top: var(--surface-rim);
+    --surface-depth: var(--primitive-shadow-recess);
+  }
+  [data-surface="flat"]:where(button, a[href], summary, [role="button"], [role="tab"]):where(:not(:disabled, [data-disabled], [aria-disabled="true"])):active {
+    --surface-tint: var(--primitive-tint-press);
+  }
+  [data-surface]:is([aria-invalid="true"], :has(> :is(input, textarea)[aria-invalid="true"])) {
+    --surface-rim: var(--primitive-destructive-border);
+    --surface-rim-top: var(--primitive-destructive-border);
+  }
+  [data-surface][data-surface]:is(:disabled, [data-disabled], [aria-disabled="true"]) {
+    --surface-tint: transparent;
+    --surface-rim-top: var(--surface-rim);
+    --surface-depth: 0 0 #0000;
+  }
+  [data-groove] {
+    flex-shrink: 0;
+    border-width: 0;
+    background-image: linear-gradient(var(--groove-direction, to bottom), var(--primitive-groove-shadow) 0 1px, var(--primitive-groove-highlight) 1px 2px);
+  }
+  [data-groove="horizontal"] {
+    height: 2px;
+  }
+  [data-groove="vertical"] {
+    --groove-direction: to right;
+    width: 2px;
+    align-self: stretch;
+  }
+  [data-carve] {
+    background-image: linear-gradient(to bottom, var(--primitive-groove-shadow) 0 1px, var(--primitive-groove-highlight) 1px 2px);
+    background-repeat: no-repeat;
+    background-size: 100% 2px;
+  }
+  [data-carve="top"] {
+    background-position: top;
+  }
+  [data-carve="bottom"] {
+    background-position: bottom;
+  }
+}
+/* Base UI unnamed checkbox/radio/switch inputs use position:fixed;top:0;left:0.
+   Activating the control focuses that input and scrolls the page to the viewport
+   origin (create-preset preview "layout jump"). Keep the input near the control. */
+input[type="checkbox"][aria-hidden="true"][tabindex="-1"],
+input[type="radio"][aria-hidden="true"][tabindex="-1"] {
+  position: absolute !important;
+  top: auto !important;
+  left: auto !important;
+}
+
+/* Switch control-glide */
+[data-slot="switch-control"] {
+  transition:
+    background-color var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    border-color var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    box-shadow var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    color var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    opacity var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+[data-slot="switch-knob"] {
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform var(--primitive-motion-moderate) cubic-bezier(0.32, 0.72, 0, 1),
+    box-shadow var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    opacity var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+[data-slot="switch-control"][data-checked] [data-slot="switch-knob"][data-size="sm"] {
+  transform: translate3d(16px, 0, 0);
+  transition-duration: var(--primitive-motion-moderate);
+}
+
+[data-slot="switch-control"][data-checked] [data-slot="switch-knob"][data-size="md"] {
+  transform: translate3d(20px, 0, 0);
+  transition-duration: var(--primitive-motion-moderate);
+}
+
+[data-slot="switch-control"][data-checked] [data-slot="switch-knob"][data-size="lg"] {
+  transform: translate3d(24px, 0, 0);
+  transition-duration: var(--primitive-motion-moderate);
+}
+
+[data-slot="switch-control"][data-unchecked] [data-slot="switch-knob"] {
+  transition-duration: var(--primitive-motion-moderate-exit);
+}
+
+[data-slot="switch-segment-indicator"] {
+  transform: translate3d(0, 0, 0);
+  transition: transform var(--primitive-motion-moderate) cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+[data-slot="switch-control"][data-checked] [data-slot="switch-segment-indicator"] {
+  transform: translate3d(100%, 0, 0);
+  transition-duration: var(--primitive-motion-moderate);
+}
+
+[data-slot="switch-control"][data-unchecked] [data-slot="switch-segment-indicator"] {
+  transition-duration: var(--primitive-motion-moderate-exit);
+}
+
+[data-slot="switch-segment-label"] {
+  transition: color var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+[data-slot="switch-power-icon"] {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transform: scale(0.92);
+  transition:
+    opacity var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform var(--primitive-motion-moderate) cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+[data-slot="switch-power-icon"][data-active="true"] {
+  opacity: 1;
+  transform: scale(1);
+  transition-duration: var(--primitive-motion-moderate);
+}
+
+[data-slot="switch-power-check"] path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+[data-slot="switch-control"][data-checked] [data-slot="switch-power-check"] path {
+  stroke-dashoffset: 0;
+  transition-duration: var(--primitive-motion-moderate);
+  transition-delay: 0ms;
+}
+
+[data-slot="switch-control"][data-unchecked] [data-slot="switch-power-check"] path {
+  stroke-dashoffset: 1;
+  transition-duration: var(--primitive-motion-fast-exit);
+  transition-delay: 0ms;
+}
+
+[data-slot="switch-card-trailing"] {
+  transition:
+    border-color var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    color var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    opacity var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+[data-slot="switch-card-trailing"][data-swapping="true"] {
+  opacity: 0.72;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="switch-control"],
+  [data-slot="switch-knob"],
+  [data-slot="switch-segment-indicator"],
+  [data-slot="switch-segment-label"],
+  [data-slot="switch-power-icon"],
+  [data-slot="switch-card-trailing"] {
+    transition-duration: 0ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  [data-slot="switch-control"][data-checked] [data-slot="switch-knob"][data-size="sm"] {
+    transform: translate3d(16px, 0, 0);
+  }
+
+  [data-slot="switch-control"][data-checked] [data-slot="switch-knob"][data-size="md"] {
+    transform: translate3d(20px, 0, 0);
+  }
+
+  [data-slot="switch-control"][data-checked] [data-slot="switch-knob"][data-size="lg"] {
+    transform: translate3d(24px, 0, 0);
+  }
+
+  [data-slot="switch-control"][data-checked] [data-slot="switch-segment-indicator"] {
+    transform: translate3d(100%, 0, 0);
+  }
+
+  [data-slot="switch-power-icon"][data-active="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  [data-slot="switch-power-icon"][data-active="false"] {
+    opacity: 0;
+  }
+
+  [data-slot="switch-control"][data-checked] [data-slot="switch-power-check"] path {
+    stroke-dashoffset: 0;
+  }
+
+  [data-slot="switch-card-trailing"][data-swapping="true"] {
+    opacity: 1;
+  }
+}
+
+/* Slider bubble / thumb presence (Base UI data-dragging + keyboard focus-visible).
+ *
+ * Base UI positions the thumb with CSS translate (translate: -50% -50%).
+ * Never add transform: translate(...) on the thumb — it double-offsets.
+ *
+ * Bubble only while dragging (or keyboard focus-visible). Do not use
+ * :focus-within — mouse drag leaves focus on the thumb and would keep the
+ * value number stuck after pointer-up. */
+[data-slot="wensity-slider-bubble"] {
+  opacity: 0;
+  transform: translateY(calc(-100% - 6px)) scale(0.94);
+  transition:
+    opacity var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.23, 1, 0.32, 1)),
+    transform var(--primitive-motion-moderate) var(--primitive-ease, cubic-bezier(0.23, 1, 0.32, 1));
+  pointer-events: none;
+}
+[data-slot="wensity-slider-thumb"][data-dragging] [data-slot="wensity-slider-bubble"],
+[data-slot="wensity-slider-thumb"]:has(:focus-visible) [data-slot="wensity-slider-bubble"] {
+  opacity: 1;
+  transform: translateY(calc(-100% - 10px)) scale(1);
+}
+[data-slot="wensity-slider-thumb"] {
+  transition:
+    scale var(--primitive-motion-moderate) var(--primitive-ease, cubic-bezier(0.23, 1, 0.32, 1)),
+    box-shadow var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.23, 1, 0.32, 1));
+}
+[data-slot="wensity-slider-thumb"]:active,
+[data-slot="wensity-slider-thumb"][data-dragging] {
+  scale: 0.92;
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--primitive-ring, var(--foreground)) 28%, transparent),
+    0 2px 10px rgba(0, 0, 0, 0.4);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="wensity-slider-thumb"],
+  [data-slot="wensity-slider-bubble"] {
+    transition-duration: 0ms !important;
+  }
+  [data-slot="wensity-slider-thumb"]:active,
+  [data-slot="wensity-slider-thumb"][data-dragging] {
+    scale: 1;
+  }
+}
+
+/* RadioGroup indicator glide */
+[data-slot="radio-orb-shell"] {
+  transition:
+    border-color var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    box-shadow var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+[data-slot="radio-command-shell"] {
+  transition:
+    border-color var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    box-shadow var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    background-color var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+[data-slot="radio-command-check"] {
+  transform: scale(0.92);
+  opacity: 0;
+  transition:
+    transform var(--primitive-motion-moderate) cubic-bezier(0.32, 0.72, 0, 1),
+    opacity var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+[data-radio-mark][data-checked] [data-slot="radio-command-check"] {
+  transform: scale(1);
+  opacity: 1;
+  transition-duration: var(--primitive-motion-moderate), var(--primitive-motion-fast);
+}
+
+[data-radio-mark][data-indeterminate] [data-slot="radio-command-check"] {
+  transform: scale(1);
+  opacity: 1;
+  transition-duration: var(--primitive-motion-moderate), var(--primitive-motion-fast);
+}
+
+[data-radio-mark][data-unchecked] [data-slot="radio-command-check"] {
+  transform: scale(0.92);
+  opacity: 0;
+  transition-duration: var(--primitive-motion-fast-exit), var(--primitive-motion-fast-exit);
+}
+
+[data-slot="radio-command-check-path"] {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+[data-radio-mark][data-checked] [data-slot="radio-command-check-path"] {
+  stroke-dashoffset: 0;
+  transition-duration: var(--primitive-motion-moderate);
+  transition-delay: 0ms;
+}
+
+[data-radio-mark][data-indeterminate] [data-slot="radio-command-check-path"] {
+  stroke-dashoffset: 0;
+  transition-duration: var(--primitive-motion-moderate);
+  transition-delay: 0ms;
+}
+
+[data-radio-mark][data-unchecked] [data-slot="radio-command-check-path"] {
+  stroke-dashoffset: 1;
+  transition-duration: var(--primitive-motion-fast-exit);
+  transition-delay: 0ms;
+}
+
+[data-slot="radio-segment-indicator"] {
+  transition: transform var(--primitive-motion-moderate) cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+[data-slot="radio-segment-indicator"][data-orientation="vertical"] {
+  transition-duration: var(--primitive-motion-moderate);
+}
+
+[data-slot="radio-segment-label"] {
+  transition: color var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+[data-slot="radio-card-shell"] {
+  transition:
+    border-color var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    box-shadow var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+[data-slot="radio-card-check-shell"] {
+  transition:
+    border-color var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    background-color var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+[data-slot="radio-card-check"] {
+  opacity: 0;
+  transform: scale(0.92);
+  transition:
+    opacity var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform var(--primitive-motion-moderate) cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+[data-radio-card][data-checked] [data-slot="radio-card-check"] {
+  opacity: 1;
+  transform: scale(1);
+  transition-duration: var(--primitive-motion-fast), var(--primitive-motion-moderate);
+}
+
+[data-radio-card][data-unchecked] [data-slot="radio-card-check"] {
+  opacity: 0;
+  transform: scale(0.92);
+  transition-duration: var(--primitive-motion-fast-exit), var(--primitive-motion-fast-exit);
+}
+
+[data-slot="radio-card-check-path"] {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--primitive-motion-fast) var(--primitive-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+[data-radio-card][data-checked] [data-slot="radio-card-check-path"] {
+  stroke-dashoffset: 0;
+  transition-duration: var(--primitive-motion-moderate);
+  transition-delay: 0ms;
+}
+
+[data-radio-card][data-unchecked] [data-slot="radio-card-check-path"] {
+  stroke-dashoffset: 1;
+  transition-duration: var(--primitive-motion-fast-exit);
+  transition-delay: 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="radio-orb-shell"],
+  [data-slot="radio-command-shell"],
+  [data-slot="radio-command-check"],
+  [data-slot="radio-command-check-path"],
+  [data-slot="radio-segment-indicator"],
+  [data-slot="radio-segment-label"],
+  [data-slot="radio-card-shell"],
+  [data-slot="radio-card-check-shell"],
+  [data-slot="radio-card-check"],
+  [data-slot="radio-card-check-path"] {
+    transition-duration: 0ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  [data-radio-mark][data-checked] [data-slot="radio-command-check"],
+  [data-radio-mark][data-indeterminate] [data-slot="radio-command-check"],
+  [data-radio-card][data-checked] [data-slot="radio-card-check"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  [data-radio-mark][data-unchecked] [data-slot="radio-command-check"],
+  [data-radio-card][data-unchecked] [data-slot="radio-card-check"] {
+    opacity: 0;
+    transform: none;
+  }
+
+  [data-radio-mark][data-checked] [data-slot="radio-command-check-path"],
+  [data-radio-mark][data-indeterminate] [data-slot="radio-command-check-path"],
+  [data-radio-card][data-checked] [data-slot="radio-card-check-path"] {
+    stroke-dashoffset: 0;
+  }
+
+  [data-radio-mark][data-unchecked] [data-slot="radio-command-check-path"],
+  [data-radio-card][data-unchecked] [data-slot="radio-card-check-path"] {
+    stroke-dashoffset: 1;
+  }
+}
+/* ── End Wensity Primitive Tokens ── */
+
+/* Bridge: Wensity ships its dark tokens under `.dark`; this app drives
+   dark mode via [data-mode="dark"], so re-scope the same values here. */
+:root[data-mode="dark"] {
+  --background: #0a0a0b;
+  --foreground: #f5f5f6;
+  --surface: #111113;
+  --surface-muted: #18181b;
+  --muted: #1c1c1f;
+  --muted-foreground: #a1a1aa;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+}
+:root[data-mode="dark"] {
+  --primitive-surface-elevated: #0f0f10;
+  --primitive-surface-overlay: #141415;
+  --primitive-surface-hover: color-mix(in srgb, var(--foreground) 5%, transparent);
+  --primitive-surface-active: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --primitive-surface-selected: color-mix(in srgb, var(--foreground) 8%, transparent);
+  --primitive-border-subtle: color-mix(in srgb, var(--border) 60%, transparent);
+  --primitive-ring: color-mix(in srgb, var(--foreground) 45%, transparent);
+  --primitive-text-secondary: color-mix(in srgb, var(--foreground) 72%, transparent);
+  --primitive-text-placeholder: color-mix(in srgb, var(--muted-foreground) 85%, transparent);
+  --primitive-radius: 0.75rem;
+  --primitive-font-sans: var(--font-sans);
+  --primitive-font-display: var(--font-display);
+  --primitive-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --primitive-control-solid: #f5f3ee;
+  --primitive-control-solid-hover: #ffffff;
+  --primitive-control-solid-active: #e8e4da;
+  --primitive-control-solid-foreground: #151719;
+  --primitive-chart-1: #3987e5;
+  --primitive-chart-2: #199e70;
+  --primitive-chart-3: #c98500;
+  --primitive-chart-4: #008300;
+  --primitive-chart-5: #9085e9;
+  --primitive-chart-6: #e66767;
+  --primitive-text-inverse: #151719;
+  --primitive-text-hint: 0.6875rem;
+  --primitive-destructive: #e11d2e;
+  --primitive-destructive-hover: #c1121f;
+  --primitive-destructive-active: #a4161a;
+  --primitive-destructive-foreground: #ffffff;
+  --primitive-destructive-surface: rgba(225, 29, 46, 0.12);
+  --primitive-destructive-border: rgba(225, 29, 46, 0.52);
+  --primitive-success: #34d399;
+  --primitive-success-surface: rgba(52, 211, 153, 0.12);
+  --primitive-success-border: rgba(52, 211, 153, 0.45);
+  --primitive-warning: #fbbf24;
+  --primitive-warning-surface: rgba(251, 191, 36, 0.12);
+  --primitive-warning-border: rgba(251, 191, 36, 0.45);
+  --primitive-info: #38bdf8;
+  --primitive-info-surface: rgba(56, 189, 248, 0.12);
+  --primitive-info-border: rgba(56, 189, 248, 0.45);
+  --primitive-radius-control: var(--primitive-radius);
+  --primitive-radius-control-sm: min(calc(var(--primitive-radius) * 0.8), 12px);
+  --primitive-radius-surface: calc(var(--primitive-radius) * 1.4);
+  --primitive-radius-popup: var(--primitive-radius);
+  --primitive-radius-item: calc(var(--primitive-radius) * 0.8);
+  --primitive-control-height-sm: 2rem;
+  --primitive-control-height-md: 2.25rem;
+  --primitive-control-height-lg: 2.5rem;
+  --primitive-shadow-raised: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.6), 0 2px 6px -2px rgba(0, 0, 0, 0.5);
+  --primitive-shadow-overlay: inset 0 1px 0 0 rgba(255, 255, 255, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.4), 0 8px 16px -4px rgba(0, 0, 0, 0.45), 0 16px 32px -8px rgba(0, 0, 0, 0.65);
+  --primitive-shadow-modal: inset 0 1px 0 0 rgba(255, 255, 255, 0.06), 0 4px 8px -2px rgba(0, 0, 0, 0.4), 0 16px 32px -8px rgba(0, 0, 0, 0.55), 0 32px 64px -16px rgba(0, 0, 0, 0.75);
+  --primitive-edge: rgba(255, 255, 255, 0.09);
+  --primitive-catchlight: rgba(255, 255, 255, 0.16);
+  --primitive-groove-shadow: rgba(0, 0, 0, 0.55);
+  --primitive-groove-highlight: rgba(255, 255, 255, 0.05);
+  --primitive-shadow-drop: 0 1px 1px -0.5px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  --primitive-shadow-recess: inset 0 2px 3px -1px rgba(0, 0, 0, 0.5);
+  --primitive-control-face: var(--primitive-frame-face);
+  --primitive-field-face: var(--primitive-frame-face);
+  --primitive-well: rgba(0, 0, 0, 0.35);
+  --primitive-shadow-well: inset 0 1px 2px 0 rgba(0, 0, 0, 0.45);
+  --primitive-tint-hover: rgba(255, 255, 255, 0.06);
+  --primitive-tint-press: rgba(0, 0, 0, 0.2);
+  --primitive-footer: color-mix(in srgb, var(--primitive-surface-elevated) 97%, white);
+  --primitive-overlay-face: color-mix(in srgb, var(--primitive-surface-overlay) 94%, white);
+  --primitive-frame-face: color-mix(in srgb, var(--primitive-surface-elevated) 97%, white);
+  --primitive-z-overlay: 100;
+  --primitive-z-popover: 130;
+  --primitive-z-toast: 140;
+  --primitive-backdrop: rgba(0, 0, 0, 0.6);
+  --primitive-motion-fast: 80ms;
+  --primitive-motion-fast-exit: 60ms;
+  --primitive-motion-moderate: 160ms;
+  --primitive-motion-moderate-exit: 120ms;
+  --primitive-motion-slow: 240ms;
+  --primitive-motion-slow-exit: 160ms;
+  --primitive-ease: cubic-bezier(0.23, 1, 0.32, 1);
 }

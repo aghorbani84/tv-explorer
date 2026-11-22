@@ -12,7 +12,7 @@ interface SpotlightProps {
 /**
  * The focused tile (Stageshow `many-of-one`): the #1 trending show, the only
  * tile in the grid with words — a big rating, a summary, actions — lifted by
- * depth (raised surface, a poster's shadow, a soft gold glow) rather than an
+ * depth (raised surface, a poster's shadow, a soft accent glow) rather than an
  * outline. The rest of the grid stays quiet beside it.
  */
 export function Spotlight({ show, isFavorite, onSelect, onToggleFavorite }: SpotlightProps) {
@@ -24,10 +24,10 @@ export function Spotlight({ show, isFavorite, onSelect, onToggleFavorite }: Spot
       aria-label={`Top rated show: ${show.name}`}
       className="animate-rise relative overflow-hidden rounded-3xl bg-surface ring-1 ring-line"
     >
-      {/* Soft gold glow, top right — the light serves the focal tile, then stops. */}
+      {/* Soft accent glow, top right — the light serves the focal tile, then stops. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-24 -top-32 h-72 w-72 rounded-full bg-gold/10 blur-3xl"
+        className="pointer-events-none absolute -right-24 -top-32 h-72 w-72 rounded-full bg-accent/10 blur-3xl"
       />
 
       <div className="relative flex flex-col gap-phi-lg p-phi-lg sm:flex-row">
@@ -35,27 +35,27 @@ export function Spotlight({ show, isFavorite, onSelect, onToggleFavorite }: Spot
           <button
             type="button"
             onClick={() => onSelect(show)}
-            className="shrink-0 self-start focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+            className="shrink-0 self-start focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label={`View details for ${show.name}`}
           >
             <img
               src={show.image.original}
               alt={`${show.name} poster`}
-              className="w-40 rounded-2xl object-cover shadow-2xl shadow-black/60 ring-1 ring-white/10 transition hover:opacity-95 sm:w-52"
+              className="w-40 rounded-2xl object-cover shadow-2xl shadow-black/20 ring-1 ring-line transition hover:opacity-95 sm:w-52 dark:shadow-black/60"
             />
           </button>
         ) : null}
 
         <div className="min-w-0 flex-1">
-          <p className="text-phi-sm font-semibold uppercase tracking-[0.14em] text-gold">
+          <p className="text-phi-sm font-semibold uppercase tracking-[0.14em] text-accent-strong">
             Top rated right now
           </p>
 
-          <h2 className="mt-2 text-phi-lg font-bold leading-tight tracking-tight text-white">
+          <h2 className="font-display mt-2 text-phi-lg font-bold leading-tight tracking-tight text-ink">
             {show.name}
           </h2>
 
-          <p className="mt-2 text-sm text-zinc-400">
+          <p className="mt-2 text-sm text-muted">
             {show.premiered ? show.premiered.slice(0, 4) : 'Year unknown'}
             {network ? ` · ${network}` : ''}
             {show.runtime ? ` · ${show.runtime} min` : ''}
@@ -64,25 +64,25 @@ export function Spotlight({ show, isFavorite, onSelect, onToggleFavorite }: Spot
 
           {/* The one number that gets to be big. */}
           <p className="mt-phi-sm flex items-baseline gap-2">
-            <span className="flex items-center gap-1.5 text-phi-lg font-bold leading-none text-gold">
+            <span className="flex items-center gap-1.5 text-phi-lg font-bold leading-none text-accent-strong">
               <Star size={22} strokeWidth={0} fill="currentColor" aria-hidden />
               {formatRating(show.rating.average)}
             </span>
-            <span className="text-sm text-zinc-500">/ 10 · TVMaze rating</span>
+            <span className="text-sm text-muted">/ 10 · TVMaze rating</span>
           </p>
 
           <div className="mt-3 flex flex-wrap gap-1.5">
             {show.genres.map((genre) => (
               <span
                 key={genre}
-                className="rounded-full bg-gold/10 px-3 py-1 text-xs font-medium text-gold ring-1 ring-gold/25"
+                className="rounded-full bg-accent-soft px-3 py-1 text-xs font-medium text-accent-strong ring-1 ring-accent/25"
               >
                 {genre}
               </span>
             ))}
           </div>
 
-          <p className="mt-phi-sm line-clamp-3 max-w-2xl text-[15px] leading-relaxed text-zinc-300">
+          <p className="mt-phi-sm line-clamp-3 max-w-2xl text-[15px] leading-relaxed text-ink/85">
             {summary || 'No summary available.'}
           </p>
 
@@ -90,7 +90,7 @@ export function Spotlight({ show, isFavorite, onSelect, onToggleFavorite }: Spot
             <button
               type="button"
               onClick={() => onSelect(show)}
-              className="rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-gold-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+              className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-ink transition hover:bg-accent-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
             >
               View details
             </button>
@@ -98,10 +98,10 @@ export function Spotlight({ show, isFavorite, onSelect, onToggleFavorite }: Spot
               type="button"
               onClick={() => onToggleFavorite(show)}
               aria-pressed={isFavorite}
-              className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
+              className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                 isFavorite
-                  ? 'bg-rose-500/15 text-rose-300 ring-rose-500/40 hover:bg-rose-500/25'
-                  : 'bg-raised text-zinc-100 ring-line hover:ring-zinc-500'
+                  ? 'bg-rose-500/15 text-rose-600 ring-rose-500/40 hover:bg-rose-500/25 dark:text-rose-300'
+                  : 'bg-raised text-ink ring-line hover:ring-muted'
               }`}
             >
               <Heart
