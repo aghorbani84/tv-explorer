@@ -1,4 +1,5 @@
 import { Heart, Star } from 'lucide-react'
+import { PosterImage } from './PosterImage'
 import { Badge, type BadgeVariant } from './wensity/badge'
 import { formatRating } from '../lib/api'
 import type { Show } from '../lib/api'
@@ -46,18 +47,12 @@ export function ShowCard({ show, isFavorite, onSelect, onToggleFavorite, riseDel
           className="block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
           aria-label={`View details for ${show.name}`}
         >
-          {show.image ? (
-            <img
-              src={show.image.medium}
-              alt={`${show.name} poster`}
-              loading="lazy"
-              className="aspect-[210/295] w-full object-cover transition duration-300 group-hover:scale-[1.03] group-hover:opacity-95"
-            />
-          ) : (
-            <div className="flex aspect-[210/295] w-full items-center justify-center bg-raised px-4 text-center text-sm text-muted">
-              No poster available
-            </div>
-          )}
+          <PosterImage
+            name={show.name}
+            image={show.image}
+            className="aspect-[210/295] w-full"
+            imgClassName="aspect-[210/295] w-full object-cover transition duration-300 group-hover:scale-[1.03] group-hover:opacity-95"
+          />
         </button>
 
         <Badge
@@ -75,7 +70,7 @@ export function ShowCard({ show, isFavorite, onSelect, onToggleFavorite, riseDel
           onClick={() => onToggleFavorite(show)}
           aria-pressed={isFavorite}
           aria-label={isFavorite ? `Remove ${show.name} from Favorites` : `Add ${show.name} to Favorites`}
-          className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+          className={`absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
             isFavorite
               ? 'opacity-100'
               : 'opacity-0 hover:bg-black/75 group-hover:opacity-100 group-focus-within:opacity-100'
@@ -96,7 +91,7 @@ export function ShowCard({ show, isFavorite, onSelect, onToggleFavorite, riseDel
           <button
             type="button"
             onClick={() => onSelect(show)}
-            className="text-left text-[15px] font-semibold leading-snug text-ink hover:text-accent-strong"
+            className="flex min-h-11 flex-1 items-center text-left text-[15px] font-semibold leading-snug text-ink hover:text-accent-strong"
           >
             {show.name}
           </button>
@@ -114,7 +109,7 @@ export function ShowCard({ show, isFavorite, onSelect, onToggleFavorite, riseDel
 
         {show.genres.length > 0 && (
           <div className="mt-1 flex flex-wrap gap-1">
-            {show.genres.slice(0, 2).map((genre) => (
+            {show.genres.slice(0, 3).map((genre) => (
               <span key={genre} className="rounded-full bg-raised px-2 py-0.5 text-[11px] text-muted">
                 {genre}
               </span>

@@ -26,24 +26,26 @@ export function ThemeSwitcher({ style, mode, setStyle, toggleMode }: ThemeSwitch
           if (value === 'achaemenid' || value === 'modern') setStyle(value)
         }}
         aria-label="Style"
+        className="h-11"
       >
-        <ToggleGroupItem value="achaemenid" aria-label="Achaemenid style">
+        <ToggleGroupItem value="achaemenid" aria-label="Achaemenid style" className="min-h-11">
           <Landmark size={14} strokeWidth={2} aria-hidden />
           Achaemenid
         </ToggleGroupItem>
-        <ToggleGroupItem value="modern" aria-label="Modern style">
+        <ToggleGroupItem value="modern" aria-label="Modern style" className="min-h-11">
           <Sparkles size={14} strokeWidth={2} aria-hidden />
           Modern
         </ToggleGroupItem>
       </ToggleGroup>
 
-      <span className="flex items-center gap-1.5">
+      <span className="flex min-h-11 items-center gap-1.5">
         <Sun size={15} strokeWidth={2} className={dark ? 'text-muted' : 'text-accent-strong'} aria-hidden />
         <Switch
           checked={dark}
           onCheckedChange={toggleMode}
           aria-label="Toggle dark mode"
           aria-pressed={dark}
+          className="relative after:absolute after:-inset-3.5 after:content-['']"
         />
         <Moon size={15} strokeWidth={2} className={dark ? 'text-accent-strong' : 'text-muted'} aria-hidden />
       </span>

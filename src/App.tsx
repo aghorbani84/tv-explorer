@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Heart, Search, SearchX, TriangleAlert, Tv, X } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Heart, Search, SearchX, Star, TriangleAlert, Tv, X } from 'lucide-react'
 import useSWR from 'swr'
+import { PosterImage } from './components/PosterImage'
+import { ProofStrip } from './components/ProofStrip'
 import { ShowCard } from './components/ShowCard'
 import { ShowDetailView } from './components/ShowDetail'
 import { Spotlight } from './components/Spotlight'
@@ -9,6 +11,7 @@ import { useFavorites } from './hooks/useFavorites'
 import { useTheme } from './hooks/useTheme'
 import {
   fetcher,
+  formatRating,
   searchShowsUrl,
   showsPageUrl,
 } from './lib/api'
@@ -16,7 +19,7 @@ import type { SearchResult, Show } from './lib/api'
 
 type View = 'home' | 'favorites'
 
-const TRENDING_COUNT = 24
+const TRENDING_COUNT = 48
 
 function useDebouncedValue(value: string, delayMs: number): string {
   const [debounced, setDebounced] = useState(value)
@@ -29,8 +32,8 @@ function useDebouncedValue(value: string, delayMs: number): string {
 
 function LoadingGrid() {
   return (
-    <div className="grid grid-cols-2 gap-phi sm:grid-cols-3 lg:grid-cols-4" aria-label="Loading shows">
-      {Array.from({ length: 8 }).map((_, i) => (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" aria-label="Loading shows">
+      {Array.from({ length: 12 }).map((_, i) => (
         <div key={i} className="animate-pulse overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
           <div className="aspect-[210/295] bg-raised" />
           <div className="space-y-2.5 p-phi-sm">
@@ -55,7 +58,7 @@ function ApiError({ message, onRetry }: { message: string; onRetry: () => void }
       <button
         type="button"
         onClick={onRetry}
-        className="mt-5 rounded-full bg-rose-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-rose-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
+        className="mt-5 min-h-11 rounded-full bg-rose-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-rose-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
       >
         Try again
       </button>
@@ -116,8 +119,10 @@ export default function App() {
 
   const trending = useMemo(() => {
     if (!allShows) return []
+    // No image filter: shows without a poster get the themed initial tile
+    // (PosterImage), so they stay in the dense grid instead of vanishing.
     return [...allShows]
-      .filter((show) => show.rating.average != null && show.image)
+      .filter((show) => show.rating.average != null)
       .sort((a, b) => (b.rating.average ?? 0) - (a.rating.average ?? 0))
       .slice(0, TRENDING_COUNT)
   }, [allShows])
@@ -143,15 +148,52 @@ export default function App() {
   const error = debouncedQuery ? searchError : trendingError
   const retry = debouncedQuery ? () => void retrySearch() : () => void retryTrending()
 
+  // Proof strip state (rank-1 lesson §A.2): all from the live SWR cache.
+  // lastUpdatedAt = ms epoch of the last successful fetch for the active view.
+  const [updatedAt, setUpdatedAt] = useState<number | null>(null)
+  const [failedRequests, setFailedRequests] = useState(0)
+  const lastErrorRef = useRef<string | null>(null)
+  const activeData = debouncedQuery ? searchResults : allShows
+  useEffect(() => {
+    if (activeData) setUpdatedAt(Date.now())
+  }, [activeData])
+  useEffect(() => {
+    if (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      if (lastErrorRef.current !== message) {
+        lastErrorRef.current = message
+        setFailedRequests((c) => c + 1)
+      }
+    } else {
+      lastErrorRef.current = null
+    }
+  }, [error])
+
+  // Datasheet title (rank-1 lesson §A.6): live numbers, same as the H1.
+  const topShow = trending[0]
+  useEffect(() => {
+    document.title = topShow
+      ? `TV Explorer v2 — ${trending.length} shows · top-rated ${topShow.name} (${formatRating(topShow.rating.average)}) · TVMaze live`
+      : 'TV Explorer v2 — TVMaze live'
+  }, [trending, topShow])
+
   // The focused tile: the #1 trending show, lifted out of the grid only on
-  // the unfiltered home view. The grid below it shows the rest.
+  // the unfiltered home view. Ranks #2–#5 form the spotlight row; the grid
+  // below shows the rest — no poster appears twice on one screen.
   const spotlightShow =
     !debouncedQuery && genre === 'All genres' && view === 'home' && !selected
       ? trending[0]
       : undefined
-  const gridShows = spotlightShow
-    ? visibleShows.filter((show) => show.id !== spotlightShow.id)
-    : visibleShows
+  const spotlightRow =
+    !debouncedQuery && genre === 'All genres' && view === 'home' && !selected
+      ? trending.slice(1, 5)
+      : []
+  const gridShows =
+    spotlightShow || spotlightRow.length > 0
+      ? visibleShows.filter(
+          (show) => show.id !== spotlightShow?.id && !spotlightRow.some((r) => r.id === show.id),
+        )
+      : visibleShows
 
   function handleSelect(show: Show) {
     setSelected(show)
@@ -168,11 +210,11 @@ export default function App() {
               setSelected(null)
               setView('home')
             }}
-            className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="flex min-h-11 items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="TV Explorer — back to Browse"
           >
             <Tv size={20} strokeWidth={2} className="text-accent" aria-hidden />
-            <span className="font-display text-lg font-bold tracking-tight text-ink">TV Explorer</span>
+            <span className="font-display text-lg font-bold tracking-tight text-ink">TV Explorer v2</span>
           </button>
 
           <div className="ml-auto flex flex-wrap items-center gap-3">
@@ -185,7 +227,7 @@ export default function App() {
                   setSelected(null)
                 }}
                 aria-pressed={view === 'home'}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                className={`min-h-11 rounded-full px-4 py-1.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   view === 'home' ? 'bg-accent font-semibold text-accent-ink' : 'text-muted hover:text-ink'
                 }`}
               >
@@ -198,7 +240,7 @@ export default function App() {
                   setSelected(null)
                 }}
                 aria-pressed={view === 'favorites'}
-                className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                className={`flex min-h-11 items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   view === 'favorites' ? 'bg-accent font-semibold text-accent-ink' : 'text-muted hover:text-ink'
                 }`}
               >
@@ -237,13 +279,13 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setView('home')}
-                  className="mt-5 rounded-full bg-accent px-5 py-2 text-sm font-semibold text-accent-ink transition hover:bg-accent-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                  className="mt-5 min-h-11 rounded-full bg-accent px-5 py-2 text-sm font-semibold text-accent-ink transition hover:bg-accent-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 >
                   Browse shows
                 </button>
               </div>
             ) : (
-              <div className="mt-phi grid grid-cols-2 gap-phi sm:grid-cols-3 lg:grid-cols-4">
+              <div className="mt-phi grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {favorites.map((show, i) => (
                   <ShowCard
                     key={show.id}
@@ -293,7 +335,7 @@ export default function App() {
                     type="button"
                     onClick={() => setQuery('')}
                     aria-label="Clear search"
-                    className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-muted transition hover:bg-raised hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    className="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted transition hover:bg-raised hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   >
                     <X size={16} strokeWidth={2} aria-hidden />
                   </button>
@@ -310,12 +352,54 @@ export default function App() {
                   />
                 </div>
               )}
+
+              {spotlightRow.length > 0 && (
+                <div className="mt-phi">
+                  <p className="text-phi-sm font-semibold uppercase tracking-[0.14em] text-muted">
+                    Next up — top rated
+                  </p>
+                  <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {spotlightRow.map((show, i) => (
+                      <button
+                        key={show.id}
+                        type="button"
+                        onClick={() => handleSelect(show)}
+                        className="flex items-center gap-3 rounded-2xl bg-surface p-2.5 text-left ring-1 ring-line transition hover:-translate-y-0.5 hover:ring-accent/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        aria-label={`View details for ${show.name}`}
+                      >
+                        <PosterImage
+                          name={show.name}
+                          image={show.image}
+                          className="h-16 w-11 shrink-0 overflow-hidden rounded-lg"
+                          imgClassName="h-16 w-11 shrink-0 rounded-lg object-cover"
+                        />
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm font-semibold text-ink">
+                            #{i + 2} {show.name}
+                          </span>
+                          <span className="mt-0.5 flex items-center gap-1 text-xs font-semibold text-accent-strong">
+                            <Star size={12} strokeWidth={0} fill="currentColor" aria-hidden />
+                            {formatRating(show.rating.average)} · {show.status}
+                          </span>
+                          <span className="mt-0.5 block truncate text-xs text-muted">
+                            {show.genres.slice(0, 2).join(' · ') || 'No genres listed'}
+                          </span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="mt-phi-lg flex flex-wrap items-end justify-between gap-4">
               <div>
                 <h1 className="font-display text-phi font-bold tracking-tight text-ink">
-                  {debouncedQuery ? `Results for “${debouncedQuery}”` : 'Trending Shows'}
+                  {debouncedQuery
+                    ? `Results for “${debouncedQuery}”`
+                    : topShow
+                      ? `TV Explorer v2 — ${trending.length} shows · top-rated ${topShow.name} (${formatRating(topShow.rating.average)}) · TVMaze live`
+                      : 'TV Explorer v2 — TVMaze live'}
                 </h1>
                 <p className="mt-1 text-sm text-muted">
                   {debouncedQuery
@@ -323,6 +407,15 @@ export default function App() {
                     : 'The highest-rated shows on TVMaze right now.'}
                 </p>
               </div>
+              <ProofStrip
+                showCount={isLoading ? null : visibleShows.length}
+                updatedAt={updatedAt}
+                // Never print "0 failed requests" next to a live error: the
+                // session counter lags the error render by one commit.
+                failedRequests={Math.max(failedRequests, error ? 1 : 0)}
+                error={error ? (error instanceof Error ? error.message : 'Unknown error') : null}
+                isLoading={isLoading}
+              />
             </div>
 
             <div className="mt-phi flex flex-wrap gap-2" role="group" aria-label="Filter by genre">
@@ -332,7 +425,7 @@ export default function App() {
                   type="button"
                   onClick={() => setGenre(g)}
                   aria-pressed={genre === g}
-                  className={`rounded-full px-3.5 py-1.5 text-phi-sm font-medium ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                  className={`min-h-11 rounded-full px-3.5 py-1.5 text-phi-sm font-medium ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                     genre === g
                       ? 'bg-accent font-semibold text-accent-ink ring-accent'
                       : 'bg-surface text-muted ring-line hover:ring-muted'
@@ -364,13 +457,8 @@ export default function App() {
               )}
 
               {!isLoading && !error && visibleShows.length > 0 && (
-                <>
-                  <p className="mb-4 text-sm text-muted">
-                    {visibleShows.length} show{visibleShows.length === 1 ? '' : 's'}
-                    {genre !== 'All genres' ? ` in ${genre}` : ''}
-                  </p>
-                  <div className="grid grid-cols-2 gap-phi sm:grid-cols-3 lg:grid-cols-4">
-                    {gridShows.map((show, i) => (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                  {gridShows.map((show, i) => (
                       <ShowCard
                         key={show.id}
                         show={show}
@@ -380,8 +468,7 @@ export default function App() {
                         riseDelayMs={Math.min(i, 11) * 30}
                       />
                     ))}
-                  </div>
-                </>
+                </div>
               )}
             </div>
           </section>

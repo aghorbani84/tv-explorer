@@ -1,4 +1,5 @@
 import { Heart, Star } from 'lucide-react'
+import { PosterImage } from './PosterImage'
 import { formatRating, stripHtml } from '../lib/api'
 import type { Show } from '../lib/api'
 
@@ -31,20 +32,20 @@ export function Spotlight({ show, isFavorite, onSelect, onToggleFavorite }: Spot
       />
 
       <div className="relative flex flex-col gap-phi-lg p-phi-lg sm:flex-row">
-        {show.image ? (
-          <button
-            type="button"
-            onClick={() => onSelect(show)}
-            className="shrink-0 self-start focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            aria-label={`View details for ${show.name}`}
-          >
-            <img
-              src={show.image.original}
-              alt={`${show.name} poster`}
-              className="w-40 rounded-2xl object-cover shadow-2xl shadow-black/20 ring-1 ring-line transition hover:opacity-95 sm:w-52 dark:shadow-black/60"
-            />
-          </button>
-        ) : null}
+        <button
+          type="button"
+          onClick={() => onSelect(show)}
+          className="shrink-0 self-start focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          aria-label={`View details for ${show.name}`}
+        >
+          <PosterImage
+            name={show.name}
+            image={show.image}
+            size="original"
+            className="aspect-[210/295] w-40 rounded-2xl sm:w-52"
+            imgClassName="aspect-[210/295] w-40 rounded-2xl object-cover shadow-2xl shadow-black/20 ring-1 ring-line transition hover:opacity-95 sm:w-52 dark:shadow-black/60"
+          />
+        </button>
 
         <div className="min-w-0 flex-1">
           <p className="text-phi-sm font-semibold uppercase tracking-[0.14em] text-accent-strong">
@@ -90,7 +91,7 @@ export function Spotlight({ show, isFavorite, onSelect, onToggleFavorite }: Spot
             <button
               type="button"
               onClick={() => onSelect(show)}
-              className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-ink transition hover:bg-accent-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+              className="min-h-11 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-ink transition hover:bg-accent-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
             >
               View details
             </button>
@@ -98,7 +99,7 @@ export function Spotlight({ show, isFavorite, onSelect, onToggleFavorite }: Spot
               type="button"
               onClick={() => onToggleFavorite(show)}
               aria-pressed={isFavorite}
-              className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+              className={`flex min-h-11 items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                 isFavorite
                   ? 'bg-rose-500/15 text-rose-600 ring-rose-500/40 hover:bg-rose-500/25 dark:text-rose-300'
                   : 'bg-raised text-ink ring-line hover:ring-muted'

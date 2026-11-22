@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { ArrowLeft, ChevronDown, ExternalLink, Heart, Star, TriangleAlert } from 'lucide-react'
 import useSWR from 'swr'
+import { PosterImage } from './PosterImage'
 import { fetcher, formatRating, showDetailUrl, stripHtml } from '../lib/api'
 import type { Show, ShowDetail } from '../lib/api'
 
@@ -22,7 +23,7 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
       <button
         type="button"
         onClick={onRetry}
-        className="mt-5 rounded-full bg-rose-500 px-5 py-2 text-sm font-medium text-ink transition hover:bg-rose-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
+        className="mt-5 min-h-11 rounded-full bg-rose-500 px-5 py-2 text-sm font-medium text-ink transition hover:bg-rose-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
       >
         Try again
       </button>
@@ -74,7 +75,7 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
       <button
         type="button"
         onClick={onBack}
-        className="mb-phi flex items-center gap-2 rounded-full bg-surface px-4 py-2 text-sm font-medium text-ink ring-1 ring-line transition hover:bg-raised hover:ring-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        className="mb-phi flex min-h-11 items-center gap-2 rounded-full bg-surface px-4 py-2 text-sm font-medium text-ink ring-1 ring-line transition hover:bg-raised hover:ring-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       >
         <ArrowLeft size={16} strokeWidth={2} aria-hidden />
         Back to results
@@ -93,17 +94,13 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
         <>
           <section className="animate-rise overflow-hidden rounded-3xl bg-surface ring-1 ring-line">
             <div className="flex flex-col gap-phi-lg p-phi-lg sm:flex-row">
-              {show.image ? (
-                <img
-                  src={show.image.original}
-                  alt={`${show.name} poster`}
-                  className="w-40 self-start rounded-2xl object-cover shadow-2xl shadow-black/60 ring-1 ring-line sm:w-52"
-                />
-              ) : (
-                <div className="flex h-80 w-40 items-center justify-center rounded-2xl bg-raised text-sm text-muted sm:w-52">
-                  No poster available
-                </div>
-              )}
+              <PosterImage
+                name={show.name}
+                image={show.image}
+                size="original"
+                className="aspect-[210/295] w-40 self-start rounded-2xl sm:w-52"
+                imgClassName="aspect-[210/295] w-40 self-start rounded-2xl object-cover shadow-2xl shadow-black/60 ring-1 ring-line sm:w-52"
+              />
 
               <div className="min-w-0 flex-1">
                 <h1 className="text-phi-lg font-bold leading-tight tracking-tight text-ink">{show.name}</h1>
@@ -115,6 +112,18 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
                     {formatRating(show.rating.average)}
                   </span>
                   <span className="text-sm text-muted">/ 10 · TVMaze rating</span>
+                </p>
+
+                {/* Counts from the live detail payload — seasons / episodes / cast. */}
+                <p className="mt-3 rounded-full bg-surface px-4 py-2 text-xs font-medium text-muted ring-1 ring-line">
+                  {detail ? (
+                    <>
+                      <span className="font-semibold text-ink">{seasons.length} seasons</span>
+                      {` · ${detail._embedded.episodes.length} episodes · ${detail._embedded.cast.length} cast members · TVMaze live`}
+                    </>
+                  ) : (
+                    'Loading seasons, episodes & cast from TVMaze…'
+                  )}
                 </p>
 
                 <dl className="mt-phi grid grid-cols-2 gap-x-phi gap-y-3 text-sm sm:grid-cols-3">
@@ -159,7 +168,7 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
                     type="button"
                     onClick={() => onToggleFavorite(show)}
                     aria-pressed={isFavorite}
-                    className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                    className={`flex min-h-11 items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                       isFavorite
                         ? 'bg-rose-500/15 text-rose-500 dark:text-rose-300 ring-rose-500/40 hover:bg-rose-500/25'
                         : 'bg-accent font-semibold text-accent-ink hover:bg-accent-deep'
@@ -173,7 +182,7 @@ export function ShowDetailView({ show, isFavorite, onToggleFavorite, onBack }: S
                       href={show.officialSite}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-2 rounded-full bg-raised px-5 py-2.5 text-sm font-medium text-ink ring-1 ring-line transition hover:ring-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                      className="flex min-h-11 items-center gap-2 rounded-full bg-raised px-5 py-2.5 text-sm font-medium text-ink ring-1 ring-line transition hover:ring-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     >
                       Official site
                       <ExternalLink size={14} strokeWidth={2} aria-hidden />
